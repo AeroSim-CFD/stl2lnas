@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! assert_almost_equal {
     ($x:expr, $y:expr, $d:expr) => {
-        if !(($x - $y < $d) || ($y - $x < $d)) {
+        if (($x - $y).abs() > $d) {
             let error_str = format!("{:.4e} != {:.4e} by more than {:.4e}", $x, $y, $d);
             panic!("{}", error_str);
         };

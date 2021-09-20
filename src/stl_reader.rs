@@ -44,12 +44,7 @@ fn bytes_to_triangle(b: &[u8; TRIANGLE_BYTES_SIZE]) -> stl_triangle::TriangleSTL
     let point1 = bytes_to_point3D(b[24..36].try_into().expect("Invalid file format (point 2)"));
     let point2 = bytes_to_point3D(b[36..48].try_into().expect("Invalid file format (normal)"));
     // 2 points are for attribute byte count
-    return stl_triangle::TriangleSTL {
-        point0,
-        point1,
-        point2,
-        normal,
-    };
+    return stl_triangle::TriangleSTL::new(point0, point1, point2, normal);
 }
 
 fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<stl_triangle::TriangleSTL> {

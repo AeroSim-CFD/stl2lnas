@@ -1,7 +1,7 @@
 use crate::common;
 
 struct LagrangianNode {
-    pos: common::Point3D,
+    pos: common::Vec3f,
     area: f32,
-    normal: common::Point3D,
+    normal: common::Vec3f,
 }

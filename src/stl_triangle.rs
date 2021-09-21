@@ -18,12 +18,7 @@ impl TriangleSTL {
         normal: common::Vec3f,
     ) -> TriangleSTL {
         assert_almost_equal!(&normal.norm(), 1.0, 1e-5f32);
-        return TriangleSTL {
-            point0,
-            point1,
-            point2,
-            normal,
-        };
+        return TriangleSTL { point0, point1, point2, normal };
     }
 
     pub fn normalize(&mut self, factor: f32, offset: common::Vec3f) {
@@ -47,25 +42,13 @@ fn get_factor_offset(min_vals: common::Vec3f, max_vals: common::Vec3f) -> (f32, 
     // Params are: the minimal value, and the difference between min_max for x
     // These can be used to normalize points
     let factor = max_vals.x - min_vals.x;
-    let offset = common::Vec3f {
-        x: min_vals.x,
-        y: min_vals.y,
-        z: min_vals.z,
-    };
+    let offset = common::Vec3f { x: min_vals.x, y: min_vals.y, z: min_vals.z };
     return (factor, offset);
 }
 
 fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (common::Vec3f, common::Vec3f) {
-    let mut min_vals = common::Vec3f {
-        x: f32::MAX,
-        y: f32::MAX,
-        z: f32::MAX,
-    };
-    let mut max_vals = common::Vec3f {
-        x: f32::MIN,
-        y: f32::MIN,
-        z: f32::MIN,
-    };
+    let mut min_vals = common::Vec3f { x: f32::MAX, y: f32::MAX, z: f32::MAX };
+    let mut max_vals = common::Vec3f { x: f32::MIN, y: f32::MIN, z: f32::MIN };
     for t in triangles {
         for p in [t.point0, t.point1, t.point2] {
             if p.x < min_vals.x {

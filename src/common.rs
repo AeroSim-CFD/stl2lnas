@@ -84,9 +84,6 @@ impl Ord for Vec3f {
                 }
             }
         }
-        panic!(
-            "Invalid comparison between {} and {}. Implementation error",
-            self, other
-        );
+        panic!("Invalid comparison between {} and {}. Implementation error", self, other);
     }
 }

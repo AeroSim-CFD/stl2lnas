@@ -32,6 +32,10 @@ impl Vec3f {
         return (self.dot(self)).sqrt();
     }
 
+    pub fn normalize(&mut self){
+        self.divide(self.norm());
+    }
+
     pub fn dot(self, other: Vec3f) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
@@ -45,6 +49,12 @@ impl Vec3f {
         self.x /= denominator;
         self.y /= denominator;
         self.z /= denominator;
+    }
+
+    pub fn multiply(&mut self, factor: f64) {
+        self.x *= factor;
+        self.y *= factor;
+        self.z *= factor;
     }
 
     pub fn cross(self, other: Self) -> Self {
@@ -127,6 +137,12 @@ impl ops::Add for Vec3f {
 
     fn add(self, other: Self) -> Self {
         return Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
+    }
+}
+
+impl ops::AddAssign for Vec3f {
+    fn add_assign(&mut self, other: Self) {
+        *self = *self+other;
     }
 }
 

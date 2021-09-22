@@ -3,6 +3,8 @@ pub mod stl_divider;
 pub mod stl_indexed;
 pub mod stl_reader;
 pub mod stl_triangle;
+pub mod lagrangian_node;
+pub mod stl2lagrangian;
 
 fn main() {
     let filename = "fixture/cube.stl";
@@ -40,4 +42,11 @@ fn main() {
     for p in idx_stl.points.iter() {
         println!("pp {} ", p);
     }
+    let area_factor = 1f64;
+    let lagrangian_nodes = stl2lagrangian::stl2lagrangian(&idx_stl, area_factor);
+    for l in lagrangian_nodes.iter(){
+        println!("l {}", l)
+    }
+    println!("len p {}", idx_stl.points.len());
+    println!("len l {}", lagrangian_nodes.len());
 }

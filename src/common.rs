@@ -8,7 +8,7 @@ macro_rules! assert_almost_equal {
     };
 }
 
-use std::{cmp::Ordering, fmt};
+use std::{cmp::Ordering, fmt, hash, ops};
 
 /*
 Algebraic Point
@@ -30,9 +30,14 @@ impl Vec3f {
     }
 
     pub fn transform(&mut self, factor: f32, offset: Self) {
-        self.x = (self.x - offset.x) / factor;
-        self.y = (self.y - offset.y) / factor;
-        self.z = (self.z - offset.z) / factor;
+        *self = *self - offset;
+        self.divide(factor)
+    }
+
+    pub fn divide(&mut self, denominator: f32) {
+        self.x /= denominator;
+        self.y /= denominator;
+        self.z /= denominator;
     }
 }
 
@@ -85,5 +90,57 @@ impl Ord for Vec3f {
             }
         }
         panic!("Invalid comparison between {} and {}. Implementation error", self, other);
+    }
+}
+
+impl ops::Add for Vec3f {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        return Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
+    }
+}
+
+impl ops::Sub for Vec3f {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self { x: self.x - other.x, y: self.y - other.y, z: self.z - other.z }
+    }
+}
+
+impl ops::Div for Vec3f {
+    type Output = Self;
+
+    fn div(self, other: Self) -> Self {
+        return Self { x: self.x / other.x, y: self.y / other.y, z: self.z / other.z };
+    }
+}
+
+impl ops::Mul for Vec3f {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self {
+        return Self { x: self.x * other.x, y: self.y * other.y, z: self.z * other.z };
+    }
+}
+
+fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
+    let y = (f * 10f32.powi(n_digits)).round() as i32;
+    return y;
+}
+
+impl hash::Hash for Vec3f {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        // Truncates value up to 5 digits after comma, then hashes it
+        let n_digits = 5;
+        let (xt, yt, zt) = (
+            truncate_float_to_int(self.x, n_digits),
+            truncate_float_to_int(self.y, n_digits),
+            truncate_float_to_int(self.z, n_digits),
+        );
+        xt.hash(state);
+        yt.hash(state);
+        zt.hash(state);
     }
 }

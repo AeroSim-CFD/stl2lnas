@@ -50,7 +50,7 @@ impl IndexedSTL {
 
     fn remove_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
         self.triangles.swap_remove(
-            self.triangles.iter().position(|x| *x == triangle).expect("Triangle not fount"),
+            self.triangles.iter().position(|x| *x == triangle).expect("Triangle not found"),
         );
     }
 
@@ -62,15 +62,25 @@ impl IndexedSTL {
         self.normals.insert(normal);
     }
 
-    pub fn divide_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
-        // Remove triangle
+    pub fn divide_triangle(
+        &mut self,
+        triangle: stl_triangle::TriangleSTL,
+    ) -> [stl_triangle::TriangleSTL; 4] {
         self.remove_triangle(triangle);
 
         let new_triangles_points = get_points_triangle_division(triangle);
+        let mut vec_new_triangle: Vec<stl_triangle::TriangleSTL> = Vec::new();
         for t_p in new_triangles_points {
             let new_triangle: TriangleSTL =
                 stl_triangle::TriangleSTL::new(t_p.0, t_p.1, t_p.2, triangle.normal);
             self.add_triangle(new_triangle);
+            vec_new_triangle.push(new_triangle);
         }
+        return [
+            vec_new_triangle[0],
+            vec_new_triangle[1],
+            vec_new_triangle[2],
+            vec_new_triangle[3],
+        ];
     }
 }

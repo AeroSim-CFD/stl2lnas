@@ -10,7 +10,7 @@ macro_rules! assert_almost_equal {
 
 use std::{cmp::Ordering, fmt, hash, ops};
 
-const PREC_DIGITS: i32 = 8i32;
+const PREC_DIGITS: i32 = 6i32;
 
 fn truncate_float_to_int(f: f64, n_digits: i32) -> i64 {
     let y = (f * 10f64.powi(n_digits)).round() as i64;

@@ -1,4 +1,5 @@
 pub mod common;
+pub mod stl_divider;
 pub mod stl_indexed;
 pub mod stl_reader;
 pub mod stl_triangle;
@@ -13,8 +14,11 @@ fn main() {
     for triangle in normalized_triangles.iter() {
         println!("2 {}", triangle);
     }
-    let indexed_triangles = stl_indexed::IndexedSTL::new(normalized_triangles);
-    for point in indexed_triangles.points.iter() {
+    let mut indexed_stl = stl_indexed::IndexedSTL::new(normalized_triangles);
+    for point in indexed_stl.points.iter() {
         println!("points {}", point);
     }
+    println!("bef {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
+    stl_divider::divide_all_triangles(&mut indexed_stl);
+    println!("after {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
 }

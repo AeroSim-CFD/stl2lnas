@@ -10,8 +10,10 @@ macro_rules! assert_almost_equal {
 
 use std::{cmp::Ordering, fmt, hash, ops};
 
-fn truncate_float_to_int(f: f64, n_digits: i32) -> i32 {
-    let y = (f * 10f64.powi(n_digits)).round() as i32;
+const PREC_DIGITS: i32 = 8i32;
+
+fn truncate_float_to_int(f: f64, n_digits: i32) -> i64 {
+    let y = (f * 10f64.powi(n_digits)).round() as i64;
     return y;
 }
 
@@ -70,8 +72,8 @@ impl Vec3f {
     }
 }
 
-pub fn almost_equal(x: f64, y: f64, n_digits: i32) -> bool {
-    return truncate_float_to_int(x, n_digits) == truncate_float_to_int(y, n_digits);
+pub fn almost_equal(x: f64, y: f64) -> bool {
+    return truncate_float_to_int(x, PREC_DIGITS) == truncate_float_to_int(y, PREC_DIGITS);
 }
 
 impl fmt::Display for Vec3f {
@@ -82,10 +84,9 @@ impl fmt::Display for Vec3f {
 
 impl PartialEq for Vec3f {
     fn eq(&self, other: &Self) -> bool {
-        let n_digits = 5i32;
-        return almost_equal(self.x, other.x, n_digits)
-            && almost_equal(self.y, other.y, n_digits)
-            && almost_equal(self.z, other.z, n_digits);
+        return almost_equal(self.x, other.x)
+            && almost_equal(self.y, other.y)
+            && almost_equal(self.z, other.z);
     }
 }
 
@@ -99,18 +100,17 @@ impl Eq for Vec3f {}
 
 impl Ord for Vec3f {
     fn cmp(&self, other: &Self) -> Ordering {
-        let n_digits = 5i32;
         // check if all numbers are almost equal, if so, points are equal
-        if almost_equal(self.x, other.x, n_digits)
-            && almost_equal(self.y, other.y, n_digits)
-            && almost_equal(self.z, other.z, n_digits)
+        if almost_equal(self.x, other.x)
+            && almost_equal(self.y, other.y)
+            && almost_equal(self.z, other.z)
         {
             return Ordering::Equal;
         }
         // check for dimensions difference, priority is (x, y, z)
         let vals_cmps = [(self.x, other.x), (self.y, other.y), (self.z, other.z)];
         for v in vals_cmps.iter() {
-            if !almost_equal(v.0, v.1, n_digits) {
+            if !almost_equal(v.0, v.1) {
                 if v.0 > v.1 {
                     return Ordering::Greater;
                 } else {
@@ -157,7 +157,7 @@ impl ops::Mul for Vec3f {
 impl hash::Hash for Vec3f {
     fn hash<H: hash::Hasher>(&self, state: &mut H) {
         // Truncates value up to 5 digits after comma, then hashes it
-        let n_digits = 5;
+        let n_digits = PREC_DIGITS;
         let (xt, yt, zt) = (
             truncate_float_to_int(self.x, n_digits),
             truncate_float_to_int(self.y, n_digits),

@@ -1,6 +1,9 @@
 # Compiled Python bytecode
 *.py[cod]
 
+# VS code workspace
+.vscode
+
 # Log files
 *.log
 
@@ -30,4 +33,3 @@ Thumbs.db
 # Added by cargo
 
 /target
-.vscode

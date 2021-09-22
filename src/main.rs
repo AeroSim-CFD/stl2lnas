@@ -19,6 +19,12 @@ fn main() {
         println!("points {}", point);
     }
     println!("bef {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
+    for t in indexed_stl.triangles.iter() {
+        println!("area b {} {}", t.area(), t);
+    }
     stl_divider::divide_all_triangles(&mut indexed_stl);
     println!("after {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
+    for t in indexed_stl.triangles.iter() {
+        println!("area a {} {}", t.area(), t);
+    }
 }

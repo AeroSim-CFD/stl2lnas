@@ -10,6 +10,11 @@ macro_rules! assert_almost_equal {
 
 use std::{cmp::Ordering, fmt, hash, ops};
 
+fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
+    let y = (f * 10f32.powi(n_digits)).round() as i32;
+    return y;
+}
+
 /*
 Algebraic Point
 */
@@ -44,13 +49,29 @@ impl Vec3f {
         return Vec3f {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y * other.z,
+            z: self.x * other.y - self.y * other.x,
         };
+    }
+
+    pub fn abs(self) -> Self {
+        let mut x = self.x;
+        if x < 0f32 {
+            x = -x;
+        }
+        let mut y = self.y;
+        if y < 0f32 {
+            y = -y;
+        }
+        let mut z = self.z;
+        if z < 0f32 {
+            z = -z;
+        }
+        return Vec3f { x, y, z };
     }
 }
 
-pub fn almost_equal(x: f32, y: f32, d: f32) -> bool {
-    return (x - y < d) || (y - x < d);
+pub fn almost_equal(x: f32, y: f32, n_digits: i32) -> bool {
+    return truncate_float_to_int(x, n_digits) == truncate_float_to_int(y, n_digits);
 }
 
 impl fmt::Display for Vec3f {
@@ -61,10 +82,10 @@ impl fmt::Display for Vec3f {
 
 impl PartialEq for Vec3f {
     fn eq(&self, other: &Self) -> bool {
-        let delta = 1e-5f32;
-        return almost_equal(self.x, other.x, delta)
-            && almost_equal(self.y, other.y, delta)
-            && almost_equal(self.z, other.z, delta);
+        let n_digits = 5i32;
+        return almost_equal(self.x, other.x, n_digits)
+            && almost_equal(self.y, other.y, n_digits)
+            && almost_equal(self.z, other.z, n_digits);
     }
 }
 
@@ -78,18 +99,18 @@ impl Eq for Vec3f {}
 
 impl Ord for Vec3f {
     fn cmp(&self, other: &Self) -> Ordering {
-        let delta = 1e-5f32;
+        let n_digits = 5i32;
         // check if all numbers are almost equal, if so, points are equal
-        if almost_equal(self.x, other.x, delta)
-            && almost_equal(self.y, other.y, delta)
-            && almost_equal(self.z, other.z, delta)
+        if almost_equal(self.x, other.x, n_digits)
+            && almost_equal(self.y, other.y, n_digits)
+            && almost_equal(self.z, other.z, n_digits)
         {
             return Ordering::Equal;
         }
         // check for dimensions difference, priority is (x, y, z)
         let vals_cmps = [(self.x, other.x), (self.y, other.y), (self.z, other.z)];
         for v in vals_cmps.iter() {
-            if !almost_equal(v.0, v.1, delta) {
+            if !almost_equal(v.0, v.1, n_digits) {
                 if v.0 > v.1 {
                     return Ordering::Greater;
                 } else {
@@ -131,11 +152,6 @@ impl ops::Mul for Vec3f {
     fn mul(self, other: Self) -> Self {
         return Self { x: self.x * other.x, y: self.y * other.y, z: self.z * other.z };
     }
-}
-
-fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
-    let y = (f * 10f32.powi(n_digits)).round() as i32;
-    return y;
 }
 
 impl hash::Hash for Vec3f {

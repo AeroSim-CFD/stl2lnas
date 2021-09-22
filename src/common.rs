@@ -39,6 +39,14 @@ impl Vec3f {
         self.y /= denominator;
         self.z /= denominator;
     }
+
+    pub fn cross(self, other: Self) -> Self {
+        return Vec3f {
+            x: self.y * other.z - self.z * other.y,
+            y: self.z * other.x - self.x * other.z,
+            z: self.x * other.y - self.y * other.z,
+        };
+    }
 }
 
 pub fn almost_equal(x: f32, y: f32, d: f32) -> bool {

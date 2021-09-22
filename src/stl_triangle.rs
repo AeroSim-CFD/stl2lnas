@@ -26,6 +26,14 @@ impl TriangleSTL {
         self.point1.transform(factor, offset);
         self.point2.transform(factor, offset);
     }
+
+    pub fn area(self) -> f32 {
+        let tr_vec1 = self.point0 - self.point1;
+        let tr_vec2 = self.point2 - self.point1;
+        let cross_prod: common::Vec3f = tr_vec1.cross(tr_vec2);
+        let area = cross_prod.norm();
+        return area;
+    }
 }
 
 impl PartialEq for TriangleSTL {
@@ -52,9 +60,9 @@ impl fmt::Display for TriangleSTL {
 fn get_factor_offset(min_vals: common::Vec3f, max_vals: common::Vec3f) -> (f32, common::Vec3f) {
     // Params are: the minimal value, and the difference between min_max for x
     // These can be used to normalize points
-    let factor = max_vals.x - min_vals.x;
+    let div_factor = (max_vals.x - min_vals.x) * 0.01f32; // normalize between 0 and 100
     let offset = common::Vec3f { x: min_vals.x, y: min_vals.y, z: min_vals.z };
-    return (factor, offset);
+    return (div_factor, offset);
 }
 
 fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (common::Vec3f, common::Vec3f) {

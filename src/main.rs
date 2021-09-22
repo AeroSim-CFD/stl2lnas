@@ -13,4 +13,8 @@ fn main() {
     for triangle in normalized_triangles.iter() {
         println!("2 {}", triangle);
     }
+    let indexed_triangles = stl_indexed::IndexedSTL::new(normalized_triangles);
+    for point in indexed_triangles.points.iter() {
+        println!("points {}", point);
+    }
 }

@@ -50,7 +50,10 @@ impl IndexedSTL {
 
     fn remove_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
         self.triangles.swap_remove(
-            self.triangles.iter().position(|x| *x == triangle).expect("Triangle not found"),
+            self.triangles
+                .iter()
+                .position(|x| *x == triangle)
+                .expect(format!("Triangle not found {}", triangle).as_str()),
         );
     }
 

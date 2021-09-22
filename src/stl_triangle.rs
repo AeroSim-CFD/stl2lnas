@@ -28,6 +28,17 @@ impl TriangleSTL {
     }
 }
 
+impl PartialEq for TriangleSTL {
+    fn eq(&self, other: &Self) -> bool {
+        return self.point0 == other.point0
+            && self.point1 == other.point1
+            && self.point2 == other.point2
+            && self.normal == other.normal;
+    }
+}
+
+impl Eq for TriangleSTL {}
+
 impl fmt::Display for TriangleSTL {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return write!(

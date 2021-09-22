@@ -27,4 +27,7 @@ fn main() {
     for t in indexed_stl.triangles.iter() {
         println!("area a {} {}", t.area(), t);
     }
+    for p in indexed_stl.points.iter() {
+        println!("p {} ", p);
+    }
 }

@@ -17,9 +17,9 @@ fn get_points_triangle_division(
     let mut point01 = point0 + point1;
     let mut point02 = point0 + point2;
     let mut point12 = point1 + point2;
-    point01.divide(2f32);
-    point02.divide(2f32);
-    point12.divide(2f32);
+    point01.divide(2f64);
+    point02.divide(2f64);
+    point12.divide(2f64);
 
     return [
         (point01, point02, point12), // middle triangle

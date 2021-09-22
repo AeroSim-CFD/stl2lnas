@@ -23,9 +23,9 @@ fn bytes_to_f32(b: &[u8; 4]) -> f32 {
 #[allow(non_snake_case)]
 fn bytes_to_Vec3f(b: &[u8; POINT_BYTE_SIZE]) -> Vec3f {
     return Vec3f {
-        x: bytes_to_f32(b[..4].try_into().expect("Invalid point bytes")),
-        y: bytes_to_f32(b[4..8].try_into().expect("Invalid point bytes")),
-        z: bytes_to_f32(b[8..12].try_into().expect("Invalid point bytes")),
+        x: bytes_to_f32(b[..4].try_into().expect("Invalid point bytes")) as f64,
+        y: bytes_to_f32(b[4..8].try_into().expect("Invalid point bytes")) as f64,
+        z: bytes_to_f32(b[8..12].try_into().expect("Invalid point bytes")) as f64,
     };
 }
 

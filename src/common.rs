@@ -10,8 +10,8 @@ macro_rules! assert_almost_equal {
 
 use std::{cmp::Ordering, fmt, hash, ops};
 
-fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
-    let y = (f * 10f32.powi(n_digits)).round() as i32;
+fn truncate_float_to_int(f: f64, n_digits: i32) -> i32 {
+    let y = (f * 10f64.powi(n_digits)).round() as i32;
     return y;
 }
 
@@ -20,26 +20,26 @@ Algebraic Point
 */
 #[derive(Clone, Copy)]
 pub struct Vec3f {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Vec3f {
-    pub fn norm(self) -> f32 {
+    pub fn norm(self) -> f64 {
         return (self.dot(self)).sqrt();
     }
 
-    pub fn dot(self, other: Vec3f) -> f32 {
+    pub fn dot(self, other: Vec3f) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    pub fn transform(&mut self, factor: f32, offset: Self) {
+    pub fn transform(&mut self, factor: f64, offset: Self) {
         *self = *self - offset;
         self.divide(factor)
     }
 
-    pub fn divide(&mut self, denominator: f32) {
+    pub fn divide(&mut self, denominator: f64) {
         self.x /= denominator;
         self.y /= denominator;
         self.z /= denominator;
@@ -55,22 +55,22 @@ impl Vec3f {
 
     pub fn abs(self) -> Self {
         let mut x = self.x;
-        if x < 0f32 {
+        if x < 0f64 {
             x = -x;
         }
         let mut y = self.y;
-        if y < 0f32 {
+        if y < 0f64 {
             y = -y;
         }
         let mut z = self.z;
-        if z < 0f32 {
+        if z < 0f64 {
             z = -z;
         }
         return Vec3f { x, y, z };
     }
 }
 
-pub fn almost_equal(x: f32, y: f32, n_digits: i32) -> bool {
+pub fn almost_equal(x: f64, y: f64, n_digits: i32) -> bool {
     return truncate_float_to_int(x, n_digits) == truncate_float_to_int(y, n_digits);
 }
 

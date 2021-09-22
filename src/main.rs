@@ -14,20 +14,30 @@ fn main() {
     for triangle in normalized_triangles.iter() {
         println!("2 {}", triangle);
     }
-    let mut indexed_stl = stl_indexed::IndexedSTL::new(normalized_triangles);
-    for point in indexed_stl.points.iter() {
+    let mut idx_stl = stl_indexed::IndexedSTL::new(normalized_triangles);
+    for point in idx_stl.points.iter() {
         println!("points {}", point);
     }
-    println!("bef {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
-    for t in indexed_stl.triangles.iter() {
+    println!("bef {} {}", idx_stl.points.len(), idx_stl.triangles.len());
+    for t in idx_stl.triangles.iter() {
         println!("area b {} {}", t.area(), t);
     }
-    stl_divider::divide_all_triangles(&mut indexed_stl);
-    println!("after {} {}", indexed_stl.points.len(), indexed_stl.triangles.len());
-    for t in indexed_stl.triangles.iter() {
+    // stl_divider::divide_all_triangles(&mut idx_stl);
+    println!("after {} {}", idx_stl.points.len(), idx_stl.triangles.len());
+    for t in idx_stl.triangles.iter() {
         println!("area a {} {}", t.area(), t);
     }
-    for p in indexed_stl.points.iter() {
+    for p in idx_stl.points.iter() {
         println!("p {} ", p);
+    }
+    let max_area = 1000f64;
+    let min_area = 100f64;
+    stl_divider::divide_stl_by_area(max_area, min_area, &mut idx_stl);
+    println!("after after {} {}", idx_stl.points.len(), idx_stl.triangles.len());
+    for t in idx_stl.triangles.iter() {
+        println!("area aa {} {}", t.area(), t);
+    }
+    for p in idx_stl.points.iter() {
+        println!("pp {} ", p);
     }
 }

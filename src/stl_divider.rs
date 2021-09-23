@@ -6,8 +6,12 @@ fn get_triangles_by_min_area(
     min_area: f64,
     idx_stl: &mut stl_indexed::IndexedSTL,
 ) -> Vec<stl_triangle::TriangleSTL> {
-    let triangles_lower_area: Vec<stl_triangle::TriangleSTL> =
-        idx_stl.triangles.iter().filter(|t| t.area() < min_area).cloned().collect();
+    let triangles_lower_area: Vec<stl_triangle::TriangleSTL> = idx_stl
+        .triangles
+        .iter()
+        .filter(|t| t.area() < min_area)
+        .cloned()
+        .collect();
     return triangles_lower_area;
 }
 
@@ -22,8 +26,12 @@ fn get_triangles_by_max_area(
     max_area: f64,
     idx_stl: &mut stl_indexed::IndexedSTL,
 ) -> Vec<stl_triangle::TriangleSTL> {
-    let triangles_greater_area: Vec<stl_triangle::TriangleSTL> =
-        idx_stl.triangles.iter().filter(|t| t.area() > max_area).cloned().collect();
+    let triangles_greater_area: Vec<stl_triangle::TriangleSTL> = idx_stl
+        .triangles
+        .iter()
+        .filter(|t| t.area() > max_area)
+        .cloned()
+        .collect();
     return triangles_greater_area;
 }
 

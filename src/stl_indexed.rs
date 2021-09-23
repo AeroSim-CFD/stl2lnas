@@ -29,8 +29,9 @@ fn get_points_triangle_division(
 
 impl IndexedSTL {
     pub fn new(triangles: Vec<stl_triangle::TriangleSTL>) -> IndexedSTL {
-        let mut idx_stl =
-            IndexedSTL { triangles: HashSet::new() };
+        let mut idx_stl = IndexedSTL {
+            triangles: HashSet::new(),
+        };
         for t in triangles {
             idx_stl.add_triangle(t);
         }

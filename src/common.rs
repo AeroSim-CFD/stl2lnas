@@ -140,7 +140,10 @@ impl Ord for Vec3f {
                 }
             }
         }
-        panic!("Invalid comparison between {} and {}. Implementation error", self, other);
+        panic!(
+            "Invalid comparison between {} and {}. Implementation error",
+            self, other
+        );
     }
 }
 
@@ -148,7 +151,11 @@ impl ops::Add for Vec3f {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        return Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
+        return Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        };
     }
 }
 
@@ -162,7 +169,11 @@ impl ops::Sub for Vec3f {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self { x: self.x - other.x, y: self.y - other.y, z: self.z - other.z }
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
     }
 }
 
@@ -170,7 +181,11 @@ impl ops::Div for Vec3f {
     type Output = Self;
 
     fn div(self, other: Self) -> Self {
-        return Self { x: self.x / other.x, y: self.y / other.y, z: self.z / other.z };
+        return Self {
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z,
+        };
     }
 }
 
@@ -178,7 +193,11 @@ impl ops::Mul for Vec3f {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self {
-        return Self { x: self.x * other.x, y: self.y * other.y, z: self.z * other.z };
+        return Self {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
+        };
     }
 }
 

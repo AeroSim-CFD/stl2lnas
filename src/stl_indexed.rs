@@ -39,26 +39,11 @@ impl IndexedSTL {
     }
 
     fn add_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
-        self.add_point(triangle.point0);
-        self.add_point(triangle.point1);
-        self.add_point(triangle.point2);
-        self.add_normal(triangle.normal);
-
         self.triangles.insert(triangle);
     }
 
     fn remove_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
         self.triangles.remove(&triangle);
-    }
-
-    fn add_point(&mut self, point: common::Vec3f) {
-        // self.points.insert(point);
-        return;
-    }
-
-    fn add_normal(&mut self, normal: common::Vec3f) {
-        // self.normals.insert(normal);
-        return;
     }
 
     pub fn divide_triangle(

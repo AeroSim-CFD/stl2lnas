@@ -2,3 +2,4 @@ path_stl: "fixture/stl/cube.stl"
 folder_output: "output/cube"
 size_x_lvl0: 2
 lvls_generate: [0, 1, 2, 3, 4, 5, 6]
+save_csv: true

@@ -8,7 +8,8 @@ macro_rules! assert_almost_equal {
     };
 }
 
-use std::{cmp::Ordering, fmt, hash, ops};
+use std::{cmp::Ordering, convert::TryInto, fmt, hash, ops};
+use serde::Serialize;
 
 const PREC_DIGITS: i32 = 6i32;
 
@@ -20,7 +21,7 @@ fn truncate_float_to_int(f: f64, n_digits: i32) -> i64 {
 /*
 Algebraic Point
 */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize)]
 pub struct Vec3f {
     pub x: f64,
     pub y: f64,
@@ -79,6 +80,13 @@ impl Vec3f {
             z = -z;
         }
         return Vec3f { x, y, z };
+    }
+
+    pub fn to_le_bytes_as_f32(self) -> [u8; 12] {
+        return [(self.x as f32).to_le_bytes(), (self.y as f32).to_le_bytes(), (self.z as f32).to_le_bytes()]
+            .concat()
+            .try_into()
+            .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
 }
 

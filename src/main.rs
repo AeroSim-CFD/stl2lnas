@@ -4,6 +4,7 @@ pub mod stl_indexed;
 pub mod stl_reader;
 pub mod stl_triangle;
 pub mod lagrangian_node;
+pub mod lagrangian_save;
 pub mod stl2lagrangian;
 
 fn main() {
@@ -49,4 +50,24 @@ fn main() {
     }
     println!("len p {}", idx_stl.points.len());
     println!("len l {}", lagrangian_nodes.len());
+}
+
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_username_from_file() -> Result<bool, io::Error> {
+    let f = File::open("hello.txt");
+
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e),
+    }
 }

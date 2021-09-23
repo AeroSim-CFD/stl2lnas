@@ -1,7 +1,6 @@
 pub mod cfg;
 pub mod lagrangian_node;
 pub mod lagrangian_save;
-pub mod stl2lagrangian;
 pub mod stl_divider;
 pub mod stl_reader;
 pub mod stl_triangle;
@@ -38,7 +37,7 @@ fn generate_lagrangian_nodes_for_lvl(
     let mut div_stl = stl_divider::DividerSTL::new(orig_triangles.clone());
     div_stl.divide_stl_by_area(max_area, min_area);
 
-    let lagrangian_nodes = stl2lagrangian::stl2lagrangian(div_stl.triangles);
+    let lagrangian_nodes = lagrangian_node::stl2lagrangian(div_stl.triangles);
     return lagrangian_nodes;
 }
 
@@ -66,18 +65,17 @@ fn save_nodes_for_lvl(
     }
 }
 
-
 fn main() {
     let filename_cfg = "fixture/convert_cube.yaml";
     let conv_cfg = cfg::ConversionConfigs::new(filename_cfg).unwrap();
 
-    conv_cfg.save_to_output_folder().unwrap_or_else(
-        |e| println!("Unable to save configs in its output folder. Error: {}", e));
+    conv_cfg
+        .save_to_output_folder()
+        .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
 
     let orig_triangles = get_normalized_triangles(&conv_cfg);
     for lvl in conv_cfg.lvls_generate.iter() {
-        let lagrangian_nodes = generate_lagrangian_nodes_for_lvl(
-            &conv_cfg, *lvl, &orig_triangles);
+        let lagrangian_nodes = generate_lagrangian_nodes_for_lvl(&conv_cfg, *lvl, &orig_triangles);
         save_nodes_for_lvl(&conv_cfg, *lvl, &lagrangian_nodes);
         println!("Generated level {}!", lvl);
     }

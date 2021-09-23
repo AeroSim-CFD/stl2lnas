@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml;
-use std::{fs, string::String, path};
 use std::error::Error;
+use std::{fs, path, string::String};
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ConversionConfigs {
@@ -12,13 +12,13 @@ pub struct ConversionConfigs {
     pub save_csv: bool,
 }
 
-impl ConversionConfigs{
+impl ConversionConfigs {
     pub fn new(filename: &str) -> Result<ConversionConfigs, Box<dyn Error>> {
         let f: ConversionConfigs = serde_yaml::from_reader(fs::File::open(filename)?)?;
         return Ok(f);
     }
-    
-    pub fn save_to_output_folder(&self) -> Result<(), Box<dyn Error>>{
+
+    pub fn save_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
         let filename = path::Path::new(self.folder_output.as_str());
         let filename = filename.join("cfg.yaml");
         let file = fs::File::create(filename.as_path())?;
@@ -26,4 +26,3 @@ impl ConversionConfigs{
         return Ok(());
     }
 }
-

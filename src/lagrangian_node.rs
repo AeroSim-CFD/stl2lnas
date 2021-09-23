@@ -1,6 +1,8 @@
 use crate::assert_almost_equal;
+use crate::stl_triangle::TriangleSTL;
 use crate::utils;
 use serde::Serialize;
+use std::collections::HashSet;
 use std::convert::TryInto;
 use std::fmt;
 
@@ -33,6 +35,12 @@ impl LagrangianNode {
             .try_into()
             .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
+
+    pub fn from_triangle(t: &TriangleSTL) -> LagrangianNode {
+        let mut triangle_middle_point = t.point0 + t.point1 + t.point2;
+        triangle_middle_point.divide(3f64);
+        return LagrangianNode::new(triangle_middle_point, t.normal, t.area());
+    }
 }
 
 impl fmt::Display for LagrangianNode {
@@ -43,4 +51,11 @@ impl fmt::Display for LagrangianNode {
             self.pos, self.normal, self.area
         );
     }
+}
+
+pub fn stl2lagrangian(triangles: HashSet<TriangleSTL>) -> Vec<LagrangianNode> {
+    return triangles
+        .iter()
+        .map(|t| LagrangianNode::from_triangle(t))
+        .collect();
 }

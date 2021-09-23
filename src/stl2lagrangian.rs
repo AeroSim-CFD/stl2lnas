@@ -1,6 +1,6 @@
 use crate::common::Vec3f;
 use crate::lagrangian_node::LagrangianNode;
-use crate::stl_indexed::IndexedSTL;
+use crate::stl_divider::DividerSTL;
 use crate::stl_triangle::TriangleSTL;
 use std::collections::HashMap;
 use std::vec;
@@ -54,17 +54,17 @@ fn add_triange_to_hash_map(t_nodes_hash_map: &mut HashMap<Vec3f, NodeTriangles>,
     }
 }
 
-fn node_triangles_from_idx_stl(idx_stl: &IndexedSTL) -> Vec<NodeTriangles> {
+fn node_triangles_from_div_stl(div_stl: &DividerSTL) -> Vec<NodeTriangles> {
     let mut t_nodes_hash_map: HashMap<Vec3f, NodeTriangles> = HashMap::new();
-    for t in idx_stl.triangles.iter() {
+    for t in div_stl.triangles.iter() {
         add_triange_to_hash_map(&mut t_nodes_hash_map, t);
     }
 
     return t_nodes_hash_map.into_iter().map(|(_k, nt)| nt).collect();
 }
 
-pub fn stl2lagrangian(idx_stl: &IndexedSTL) -> Vec<LagrangianNode> {
-    let node_triangles = node_triangles_from_idx_stl(idx_stl);
+pub fn stl2lagrangian(div_stl: &DividerSTL) -> Vec<LagrangianNode> {
+    let node_triangles = node_triangles_from_div_stl(div_stl);
 
     return node_triangles
         .into_iter()

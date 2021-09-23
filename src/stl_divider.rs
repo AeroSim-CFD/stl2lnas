@@ -1,4 +1,4 @@
-use crate::{utils, stl_triangle::TriangleSTL};
+use crate::{stl_triangle::TriangleSTL, utils};
 use core::panic;
 use std::collections::HashSet;
 
@@ -63,70 +63,70 @@ impl DividerSTL {
             vec_new_triangle[3],
         ];
     }
-}
 
-fn get_triangles_by_min_area(min_area: f64, div_stl: &mut DividerSTL) -> Vec<TriangleSTL> {
-    let triangles_lower_area: Vec<TriangleSTL> = div_stl
-        .triangles
-        .iter()
-        .filter(|t| t.area() < min_area)
-        .cloned()
-        .collect();
-    return triangles_lower_area;
-}
+    pub fn divide_stl_by_area(&mut self, max_area: f64, min_area: f64) {
+        if max_area < min_area * 4f64 {
+            panic!(
+                "Max area should be at least 4 times greater than min area. max:{:.4} min:{:.4}",
+                max_area, min_area
+            )
+        }
 
-fn divide_stl_by_min_area(min_area: f64, div_stl: &mut DividerSTL) {
-    let triangles_lower_area = get_triangles_by_min_area(min_area, div_stl);
-    while triangles_lower_area.len() > 0 {
-        panic!("I don't know how to increase area of triangles yet :(");
+        self.divide_stl_by_max_area(max_area);
+        self.divide_stl_by_min_area(min_area);
     }
-}
 
-fn get_triangles_by_max_area(max_area: f64, div_stl: &mut DividerSTL) -> Vec<TriangleSTL> {
-    let triangles_greater_area: Vec<TriangleSTL> = div_stl
-        .triangles
-        .iter()
-        .filter(|t| t.area() > max_area)
-        .cloned()
-        .collect();
-    return triangles_greater_area;
-}
+    fn get_triangles_by_min_area(&mut self, min_area: f64) -> Vec<TriangleSTL> {
+        let triangles_lower_area: Vec<TriangleSTL> = self
+            .triangles
+            .iter()
+            .filter(|t| t.area() < min_area)
+            .cloned()
+            .collect();
+        return triangles_lower_area;
+    }
 
-fn divide_stl_by_max_area(max_area: f64, div_stl: &mut DividerSTL) {
-    let mut triagles_2_divide = get_triangles_by_max_area(max_area, div_stl);
+    fn divide_stl_by_min_area(&mut self, min_area: f64) {
+        let triangles_lower_area = self.get_triangles_by_min_area(min_area);
+        while triangles_lower_area.len() > 0 {
+            panic!("I don't know how to increase area of triangles yet :(");
+        }
+    }
 
-    // While there are still triangles to refine
-    while triagles_2_divide.len() > 0 {
-        let mut new_triangles_2_divide: Vec<TriangleSTL> = Vec::new();
-        for t in triagles_2_divide.iter() {
-            let created_triangles = div_stl.divide_triangle(*t);
-            // Check if some created triangles still need refinement
-            for ct in created_triangles {
-                if ct.area() > max_area {
-                    new_triangles_2_divide.push(ct);
+    fn get_triangles_by_max_area(&mut self, max_area: f64) -> Vec<TriangleSTL> {
+        let triangles_greater_area: Vec<TriangleSTL> = self
+            .triangles
+            .iter()
+            .filter(|t| t.area() > max_area)
+            .cloned()
+            .collect();
+        return triangles_greater_area;
+    }
+
+    fn divide_stl_by_max_area(&mut self, max_area: f64) {
+        let mut triagles_2_divide = self.get_triangles_by_max_area(max_area);
+
+        // While there are still triangles to refine
+        while triagles_2_divide.len() > 0 {
+            let mut new_triangles_2_divide: Vec<TriangleSTL> = Vec::new();
+            for t in triagles_2_divide.iter() {
+                let created_triangles = self.divide_triangle(*t);
+                // Check if some created triangles still need refinement
+                for ct in created_triangles {
+                    if ct.area() > max_area {
+                        new_triangles_2_divide.push(ct);
+                    }
                 }
             }
+            // Add new triangles to divide
+            triagles_2_divide = new_triangles_2_divide.clone();
         }
-        // Add new triangles to divide
-        triagles_2_divide = new_triangles_2_divide.clone();
-    }
-}
-
-pub fn divide_stl_by_area(max_area: f64, min_area: f64, div_stl: &mut DividerSTL) {
-    if max_area < min_area * 4f64 {
-        panic!(
-            "Max area should be at least 4 times greater than min area. max:{:.4} min:{:.4}",
-            max_area, min_area
-        )
     }
 
-    divide_stl_by_max_area(max_area, div_stl);
-    divide_stl_by_min_area(min_area, div_stl);
-}
-
-pub fn divide_all_triangles(div_stl: &mut DividerSTL) {
-    let orig_triangles = div_stl.triangles.clone();
-    for t in orig_triangles {
-        div_stl.divide_triangle(t);
+    pub fn divide_all_triangles(&mut self) {
+        let orig_triangles = self.triangles.clone();
+        for t in orig_triangles {
+            self.divide_triangle(t);
+        }
     }
 }

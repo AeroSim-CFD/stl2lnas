@@ -1,8 +1,7 @@
-use crate::utils::Vec3f;
 use crate::lagrangian_node::LagrangianNode;
-use crate::stl_divider::DividerSTL;
 use crate::stl_triangle::TriangleSTL;
-use std::collections::HashMap;
+use crate::utils::Vec3f;
+use std::collections::{HashMap, HashSet};
 use std::vec;
 
 struct NodeTriangles {
@@ -42,29 +41,29 @@ impl NodeTriangles {
     }
 }
 
-fn add_triange_to_hash_map(t_nodes_hash_map: &mut HashMap<Vec3f, NodeTriangles>, t: &TriangleSTL) {
+fn add_triangle_to_hash_map(t_nodes_hash_map: &mut HashMap<Vec3f, NodeTriangles>, t: TriangleSTL) {
     for p in [t.point0, t.point1, t.point2] {
         t_nodes_hash_map
             .entry(p)
-            .and_modify(|tn| tn.triangles.push(t.clone()))
+            .and_modify(|tn| tn.triangles.push(t))
             .or_insert(NodeTriangles {
                 pos: p,
-                triangles: vec![t.clone()],
+                triangles: vec![t],
             });
     }
 }
 
-fn node_triangles_from_div_stl(div_stl: &DividerSTL) -> Vec<NodeTriangles> {
+fn triangles2node_triangles(triangles: HashSet<TriangleSTL>) -> Vec<NodeTriangles> {
     let mut t_nodes_hash_map: HashMap<Vec3f, NodeTriangles> = HashMap::new();
-    for t in div_stl.triangles.iter() {
-        add_triange_to_hash_map(&mut t_nodes_hash_map, t);
+    for t in triangles {
+        add_triangle_to_hash_map(&mut t_nodes_hash_map, t);
     }
 
     return t_nodes_hash_map.into_iter().map(|(_k, nt)| nt).collect();
 }
 
-pub fn stl2lagrangian(div_stl: &DividerSTL) -> Vec<LagrangianNode> {
-    let node_triangles = node_triangles_from_div_stl(div_stl);
+pub fn stl2lagrangian(triangles: HashSet<TriangleSTL>) -> Vec<LagrangianNode> {
+    let node_triangles = triangles2node_triangles(triangles);
 
     return node_triangles
         .into_iter()

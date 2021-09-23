@@ -1,4 +1,4 @@
-use crate::{utils::Vec3f, stl_triangle};
+use crate::{stl_triangle, utils::Vec3f};
 use std::{convert::TryInto, fs};
 
 const POINT_BYTE_SIZE: usize = 12;

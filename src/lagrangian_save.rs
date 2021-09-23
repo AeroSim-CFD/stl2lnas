@@ -63,8 +63,8 @@ fn write_to_bin_file(filename: &path::Path, v: &Vec<u8>) -> Result<(), io::Error
 pub fn save_lagrangian_nodes_lnas(
     filename: &path::Path,
     lagrangian_nodes: &Vec<LagrangianNode>,
-    min_area: &f32,
-    max_area: &f32,
+    min_area: f32,
+    max_area: f32,
 ) -> Result<(), Box<dyn Error>> {
     create_folder_for_filename(filename)?;
 

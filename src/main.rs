@@ -1,3 +1,4 @@
+pub mod cfg;
 pub mod common;
 pub mod lagrangian_node;
 pub mod lagrangian_save;
@@ -8,9 +9,11 @@ pub mod stl_triangle;
 use std::path;
 
 fn main() {
-    let filename = "fixture/cube.stl";
+    let filename_cfg = "fixture/convert_cube.yaml";
+    let conv_cfg = cfg::new_from_file(filename_cfg).unwrap();
+    let filename = conv_cfg.path_stl;
     let total_dist_x = 2.5f64;
-    let triangles = stl_reader::read_stl(filename);
+    let triangles = stl_reader::read_stl(filename.as_str());
     // for triangle in triangles.iter() {
     //     println!("1 {}", triangle);
     // }

@@ -1,6 +1,10 @@
 # Compiled Python bytecode
 *.py[cod]
 
+# Generated files
+*.csv
+*.lnas
+
 # VS code workspace
 .vscode
 

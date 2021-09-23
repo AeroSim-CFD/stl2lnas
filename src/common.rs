@@ -8,8 +8,8 @@ macro_rules! assert_almost_equal {
     };
 }
 
-use std::{cmp::Ordering, convert::TryInto, fmt, hash, ops};
 use serde::Serialize;
+use std::{cmp::Ordering, convert::TryInto, fmt, hash, ops};
 
 const PREC_DIGITS: i32 = 6i32;
 
@@ -33,7 +33,7 @@ impl Vec3f {
         return (self.dot(self)).sqrt();
     }
 
-    pub fn normalize(&mut self){
+    pub fn normalize(&mut self) {
         self.divide(self.norm());
     }
 
@@ -43,7 +43,7 @@ impl Vec3f {
 
     pub fn transform(&mut self, factor: f64, offset: Self) {
         *self = *self - offset;
-        self.divide(factor)
+        self.multiply(factor)
     }
 
     pub fn divide(&mut self, denominator: f64) {
@@ -83,10 +83,14 @@ impl Vec3f {
     }
 
     pub fn to_le_bytes_as_f32(self) -> [u8; 12] {
-        return [(self.x as f32).to_le_bytes(), (self.y as f32).to_le_bytes(), (self.z as f32).to_le_bytes()]
-            .concat()
-            .try_into()
-            .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+        return [
+            (self.x as f32).to_le_bytes(),
+            (self.y as f32).to_le_bytes(),
+            (self.z as f32).to_le_bytes(),
+        ]
+        .concat()
+        .try_into()
+        .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
 }
 
@@ -150,7 +154,7 @@ impl ops::Add for Vec3f {
 
 impl ops::AddAssign for Vec3f {
     fn add_assign(&mut self, other: Self) {
-        *self = *self+other;
+        *self = *self + other;
     }
 }
 

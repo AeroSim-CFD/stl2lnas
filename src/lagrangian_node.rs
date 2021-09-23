@@ -32,10 +32,11 @@ impl LagrangianNode{
     }
 
     pub fn get_le_bytes(self) -> [u8; 28] {
-        return [self.pos.to_le_bytes_as_f32(), self.normal.to_le_bytes_as_f32()].concat()
-            .extend((self.area as f32).to_le_bytes())
-            .try_into()
-            .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len());
+        let mut vec = [self.pos.to_le_bytes_as_f32(), self.normal.to_le_bytes_as_f32()].concat();
+        vec.extend((self.area as f32).to_le_bytes());
+
+        return vec.try_into()
+            .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
 }
 

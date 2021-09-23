@@ -3,9 +3,7 @@ use crate::stl_triangle::{self, TriangleSTL};
 use std::collections::HashSet;
 
 pub struct IndexedSTL {
-    pub points: HashSet<common::Vec3f>,
-    pub normals: HashSet<common::Vec3f>,
-    pub triangles: Vec<stl_triangle::TriangleSTL>,
+    pub triangles: HashSet<stl_triangle::TriangleSTL>,
 }
 
 fn get_points_triangle_division(
@@ -32,7 +30,7 @@ fn get_points_triangle_division(
 impl IndexedSTL {
     pub fn new(triangles: Vec<stl_triangle::TriangleSTL>) -> IndexedSTL {
         let mut idx_stl =
-            IndexedSTL { points: HashSet::new(), normals: HashSet::new(), triangles: Vec::new() };
+            IndexedSTL { triangles: HashSet::new() };
         for t in triangles {
             idx_stl.add_triangle(t);
         }
@@ -45,24 +43,21 @@ impl IndexedSTL {
         self.add_point(triangle.point2);
         self.add_normal(triangle.normal);
 
-        self.triangles.push(triangle);
+        self.triangles.insert(triangle);
     }
 
     fn remove_triangle(&mut self, triangle: stl_triangle::TriangleSTL) {
-        self.triangles.swap_remove(
-            self.triangles
-                .iter()
-                .position(|x| *x == triangle)
-                .expect(format!("Triangle not found {}", triangle).as_str()),
-        );
+        self.triangles.remove(&triangle);
     }
 
     fn add_point(&mut self, point: common::Vec3f) {
-        self.points.insert(point);
+        // self.points.insert(point);
+        return;
     }
 
     fn add_normal(&mut self, normal: common::Vec3f) {
-        self.normals.insert(normal);
+        // self.normals.insert(normal);
+        return;
     }
 
     pub fn divide_triangle(

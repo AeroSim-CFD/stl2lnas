@@ -2,7 +2,7 @@ use crate::assert_almost_equal;
 use crate::common;
 use std::fmt;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Hash)]
 pub struct TriangleSTL {
     pub point0: common::Vec3f,
     pub point1: common::Vec3f,
@@ -57,12 +57,16 @@ impl fmt::Display for TriangleSTL {
     }
 }
 
-fn get_factor_offset(min_vals: common::Vec3f, max_vals: common::Vec3f) -> (f64, common::Vec3f) {
+fn get_factor_offset(
+    min_vals: common::Vec3f,
+    max_vals: common::Vec3f,
+    total_dist_x: f64,
+) -> (f64, common::Vec3f) {
     // Params are: the minimal value, and the difference between min_max for x
     // These can be used to normalize points
-    let div_factor = (max_vals.x - min_vals.x) * 0.01f64; // normalize between 0 and 100
+    let mul_factor =  total_dist_x / (max_vals.x - min_vals.x); // normalize between 0 and total_dist
     let offset = common::Vec3f { x: min_vals.x, y: min_vals.y, z: min_vals.z };
-    return (div_factor, offset);
+    return (mul_factor, offset);
 }
 
 fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (common::Vec3f, common::Vec3f) {
@@ -90,13 +94,13 @@ fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (common::Vec3f, common
     return (min_vals, max_vals);
 }
 
-pub fn normalize_triangles(triangles: &Vec<TriangleSTL>) -> Vec<TriangleSTL> {
+pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f64) -> Vec<TriangleSTL> {
     let (min_vals, max_vals) = get_triangles_min_max(&triangles);
-    let (factor, offset) = get_factor_offset(min_vals, max_vals);
+    let (mul_factor, offset) = get_factor_offset(min_vals, max_vals, total_dist_x);
     let mut normalized_triangles: Vec<TriangleSTL> = Vec::new();
     for t in triangles.iter() {
         let mut normalized_t = Clone::clone(t);
-        normalized_t.normalize(factor, offset);
+        normalized_t.normalize(mul_factor, offset);
         normalized_triangles.push(normalized_t);
     }
     return normalized_triangles;

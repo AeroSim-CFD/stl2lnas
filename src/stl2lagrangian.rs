@@ -11,7 +11,7 @@ struct NodeTriangles {
 }
 
 impl NodeTriangles {
-    pub fn lagrangian_node(self, area_factor: f64) -> LagrangianNode {
+    pub fn lagrangian_node(self) -> LagrangianNode {
         if self.triangles.len() == 0usize {
             panic!(
                 "Node at {} is associated with no triangle, unable to generate lagrangian node.",
@@ -26,14 +26,17 @@ impl NodeTriangles {
             z: 0f64,
         };
         let mut avg_areas = 0f64;
+
         for (i, t) in self.triangles.iter().enumerate() {
+            // Sum triangle area
             avg_areas += t.area() / (self.triangles.len() as f64);
+            // Normal is weighted with its triangle area
             let mut normal_sum = t.normal;
             normal_sum.multiply(triangles_areas[i]);
             node_normal += normal_sum;
         }
+        // Normalize normal
         node_normal.normalize();
-        avg_areas /= area_factor;
 
         return LagrangianNode::new(self.pos, node_normal, avg_areas);
     }
@@ -57,17 +60,14 @@ fn node_triangles_from_idx_stl(idx_stl: &IndexedSTL) -> Vec<NodeTriangles> {
         add_triange_to_hash_map(&mut t_nodes_hash_map, t);
     }
 
-    return t_nodes_hash_map
-        .into_iter()
-        .map(|(_k, node_triangles)| node_triangles)
-        .collect();
+    return t_nodes_hash_map.into_iter().map(|(_k, nt)| nt).collect();
 }
 
-pub fn stl2lagrangian(idx_stl: &IndexedSTL, area_factor: f64) -> Vec<LagrangianNode> {
+pub fn stl2lagrangian(idx_stl: &IndexedSTL) -> Vec<LagrangianNode> {
     let node_triangles = node_triangles_from_idx_stl(idx_stl);
 
     return node_triangles
         .into_iter()
-        .map(|nt| nt.lagrangian_node(area_factor))
+        .map(|nt| nt.lagrangian_node())
         .collect();
 }

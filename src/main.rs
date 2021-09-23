@@ -6,6 +6,7 @@ pub mod stl_divider;
 pub mod stl_indexed;
 pub mod stl_reader;
 pub mod stl_triangle;
+use std::path;
 
 fn main() {
     let filename = "fixture/cube.stl";
@@ -41,4 +42,17 @@ fn main() {
     //     println!("l {}", l)
     // }
     println!("len l {}", lagrangian_nodes.len());
+    lagrangian_save::save_lagrangian_nodes_csv(
+        path::Path::new("output/teste.csv"),
+        &lagrangian_nodes,
+    )
+    .unwrap_or_else(|e| println!("Savin csv error. Error: {}", e));
+
+    lagrangian_save::save_lagrangian_nodes_lnas(
+        path::Path::new("output/teste.lnas"),
+        &lagrangian_nodes,
+        &(min_area as f32),
+        &(max_area as f32),
+    )
+    .unwrap_or_else(|e| println!("Savin lnas error. Error: {}", e));
 }

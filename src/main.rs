@@ -1,73 +1,42 @@
 pub mod common;
+pub mod lagrangian_node;
+pub mod lagrangian_save;
+pub mod stl2lagrangian;
 pub mod stl_divider;
 pub mod stl_indexed;
 pub mod stl_reader;
 pub mod stl_triangle;
-pub mod lagrangian_node;
-pub mod lagrangian_save;
-pub mod stl2lagrangian;
 
 fn main() {
     let filename = "fixture/cube.stl";
+    let total_dist_x = 512f64;
     let triangles = stl_reader::read_stl(filename);
-    for triangle in triangles.iter() {
-        println!("1 {}", triangle);
-    }
-    let normalized_triangles = stl_triangle::normalize_triangles(&triangles);
-    for triangle in normalized_triangles.iter() {
-        println!("2 {}", triangle);
-    }
+    // for triangle in triangles.iter() {
+    //     println!("1 {}", triangle);
+    // }
+    let normalized_triangles = stl_triangle::normalize_triangles(&triangles, total_dist_x);
+    // for triangle in normalized_triangles.iter() {
+    //     println!("2 {}", triangle);
+    // }
     let mut idx_stl = stl_indexed::IndexedSTL::new(normalized_triangles);
-    for point in idx_stl.points.iter() {
-        println!("points {}", point);
-    }
-    println!("bef {} {}", idx_stl.points.len(), idx_stl.triangles.len());
-    for t in idx_stl.triangles.iter() {
-        println!("area b {} {}", t.area(), t);
-    }
-    // stl_divider::divide_all_triangles(&mut idx_stl);
-    println!("after {} {}", idx_stl.points.len(), idx_stl.triangles.len());
-    for t in idx_stl.triangles.iter() {
-        println!("area a {} {}", t.area(), t);
-    }
-    for p in idx_stl.points.iter() {
-        println!("p {} ", p);
-    }
-    let max_area = 1000f64;
-    let min_area = 100f64;
+
+    // for t in idx_stl.triangles.iter() {
+    //     println!("area b {} {}", t.area(), t);
+    // }
+    // // stl_divider::divide_all_triangles(&mut idx_stl);
+    // for t in idx_stl.triangles.iter() {
+    //     println!("area a {} {}", t.area(), t);
+    // }
+    let max_area = 2f64;
+    let min_area = 0.2f64;
     stl_divider::divide_stl_by_area(max_area, min_area, &mut idx_stl);
-    println!("after after {} {}", idx_stl.points.len(), idx_stl.triangles.len());
-    for t in idx_stl.triangles.iter() {
-        println!("area aa {} {}", t.area(), t);
-    }
-    for p in idx_stl.points.iter() {
-        println!("pp {} ", p);
-    }
+    // for t in idx_stl.triangles.iter() {
+    //     println!("area aa {} {}", t.area(), t);
+    // }
     let area_factor = 1f64;
     let lagrangian_nodes = stl2lagrangian::stl2lagrangian(&idx_stl, area_factor);
-    for l in lagrangian_nodes.iter(){
-        println!("l {}", l)
-    }
-    println!("len p {}", idx_stl.points.len());
+    // for l in lagrangian_nodes.iter() {
+    //     println!("l {}", l)
+    // }
     println!("len l {}", lagrangian_nodes.len());
-}
-
-use std::io;
-use std::io::Read;
-use std::fs::File;
-
-fn read_username_from_file() -> Result<bool, io::Error> {
-    let f = File::open("hello.txt");
-
-    let mut f = match f {
-        Ok(file) => file,
-        Err(e) => return Err(e),
-    };
-
-    let mut s = String::new();
-
-    match f.read_to_string(&mut s) {
-        Ok(_) => Ok(s),
-        Err(e) => Err(e),
-    }
 }

@@ -1,4 +1,4 @@
-use crate::common::Vec3f;
+use crate::utils::Vec3f;
 use crate::lagrangian_node::LagrangianNode;
 use crate::stl_divider::DividerSTL;
 use crate::stl_triangle::TriangleSTL;

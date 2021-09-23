@@ -1,4 +1,4 @@
-use crate::{common, stl_triangle::TriangleSTL};
+use crate::{utils, stl_triangle::TriangleSTL};
 use core::panic;
 use std::collections::HashSet;
 
@@ -8,7 +8,7 @@ pub struct DividerSTL {
 
 fn get_points_triangle_division(
     triangle: TriangleSTL,
-) -> [(common::Vec3f, common::Vec3f, common::Vec3f); 4] {
+) -> [(utils::Vec3f, utils::Vec3f, utils::Vec3f); 4] {
     let (point0, point1, point2) = (triangle.point0, triangle.point1, triangle.point2);
 
     // Points between triangle vertices

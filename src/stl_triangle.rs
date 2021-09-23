@@ -1,21 +1,21 @@
 use crate::assert_almost_equal;
-use crate::common;
+use crate::utils;
 use std::fmt;
 
 #[derive(Clone, Copy, Hash)]
 pub struct TriangleSTL {
-    pub point0: common::Vec3f,
-    pub point1: common::Vec3f,
-    pub point2: common::Vec3f,
-    pub normal: common::Vec3f,
+    pub point0: utils::Vec3f,
+    pub point1: utils::Vec3f,
+    pub point2: utils::Vec3f,
+    pub normal: utils::Vec3f,
 }
 
 impl TriangleSTL {
     pub fn new(
-        point0: common::Vec3f,
-        point1: common::Vec3f,
-        point2: common::Vec3f,
-        normal: common::Vec3f,
+        point0: utils::Vec3f,
+        point1: utils::Vec3f,
+        point2: utils::Vec3f,
+        normal: utils::Vec3f,
     ) -> TriangleSTL {
         assert_almost_equal!(&normal.norm(), 1.0, 1e-5f64);
         return TriangleSTL {
@@ -26,7 +26,7 @@ impl TriangleSTL {
         };
     }
 
-    pub fn normalize(&mut self, factor: f64, offset: common::Vec3f) {
+    pub fn normalize(&mut self, factor: f64, offset: utils::Vec3f) {
         self.point0.transform(factor, offset);
         self.point1.transform(factor, offset);
         self.point2.transform(factor, offset);
@@ -35,7 +35,7 @@ impl TriangleSTL {
     pub fn area(self) -> f64 {
         let tr_vec1 = self.point0 - self.point1;
         let tr_vec2 = self.point2 - self.point1;
-        let cross_prod: common::Vec3f = tr_vec1.cross(tr_vec2);
+        let cross_prod: utils::Vec3f = tr_vec1.cross(tr_vec2);
         let area = cross_prod.norm();
         return area;
     }
@@ -63,14 +63,14 @@ impl fmt::Display for TriangleSTL {
 }
 
 fn get_factor_offset(
-    min_vals: common::Vec3f,
-    max_vals: common::Vec3f,
+    min_vals: utils::Vec3f,
+    max_vals: utils::Vec3f,
     total_dist_x: f64,
-) -> (f64, common::Vec3f) {
+) -> (f64, utils::Vec3f) {
     // Params are: the minimal value, and the difference between min_max for x
     // These can be used to normalize points
     let mul_factor = total_dist_x / (max_vals.x - min_vals.x); // normalize between 0 and total_dist
-    let offset = common::Vec3f {
+    let offset = utils::Vec3f {
         x: min_vals.x,
         y: min_vals.y,
         z: min_vals.z,
@@ -78,13 +78,13 @@ fn get_factor_offset(
     return (mul_factor, offset);
 }
 
-fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (common::Vec3f, common::Vec3f) {
-    let mut min_vals = common::Vec3f {
+fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (utils::Vec3f, utils::Vec3f) {
+    let mut min_vals = utils::Vec3f {
         x: f64::MAX,
         y: f64::MAX,
         z: f64::MAX,
     };
-    let mut max_vals = common::Vec3f {
+    let mut max_vals = utils::Vec3f {
         x: f64::MIN,
         y: f64::MIN,
         z: f64::MIN,

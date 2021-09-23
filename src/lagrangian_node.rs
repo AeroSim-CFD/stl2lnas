@@ -1,13 +1,13 @@
 use crate::assert_almost_equal;
-use crate::common;
+use crate::utils;
 use serde::Serialize;
 use std::convert::TryInto;
 use std::fmt;
 
 #[derive(Serialize)]
 pub struct LagrangianNode {
-    pub pos: common::Vec3f,
-    pub normal: common::Vec3f,
+    pub pos: utils::Vec3f,
+    pub normal: utils::Vec3f,
     pub area: f64,
 }
 
@@ -16,7 +16,7 @@ pub const LAGRANGIAN_NODE_HEADER: [&str; 7] = [
 ];
 
 impl LagrangianNode {
-    pub fn new(pos: common::Vec3f, normal: common::Vec3f, area: f64) -> LagrangianNode {
+    pub fn new(pos: utils::Vec3f, normal: utils::Vec3f, area: f64) -> LagrangianNode {
         assert_almost_equal!(normal.norm(), 1f64, 1e-6f64);
         return LagrangianNode { pos, normal, area };
     }

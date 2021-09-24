@@ -38,7 +38,7 @@ The format definition is:
 header: "LAGRANGIAN NASSU NODES" (22 bytes)
 minimun possible area: f32 (4 bytes)
 maximun possible area: f32 (4 bytes)
-number of points: usize (8 bytes)
+number of points: u64 (8 bytes)
 foreach point (28 bytes):
     point's position (x, y, z): (f32, f32, f32) (12 bytes)
     point's normal (x, y, z): (f32, f32, f32) (12 bytes)

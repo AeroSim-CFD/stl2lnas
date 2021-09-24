@@ -2,7 +2,8 @@
 
 Convert .stl files to Lagrangian Nassu (.lnas) format.
 
-It is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu), an LBM based CFD solver.
+This is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu),
+an LBM based CFD solver.
 
 
 1. [Usage](#usage)
@@ -22,13 +23,12 @@ To use the program, you may run
 cargo run --release -- --cfg examples/convert_cube.yaml
 ```
 
-You can substitute `examples/convert_cube.yaml` for your configuration file.
+You can substitute `examples/convert_cube.yaml` with your configuration file.
 
 ## Lagrangian Nassu format
 
-The Lagrangian Nassu format contains a set of points representing an object, each one with given normal and area.
-Its points should be distributed evenly on the object's surface.
-In order to do it, ``stl2lnas`` implements triangles division (refining).
+The Lagrangian Nassu format contains a set of points representing a body. 
+Each point has a normal and an area, and they should be evenly distributed over the body's surface.
 
 The lagrangian nodes are used by IBM (Immersed Boundary Method) to represent a body and its physics.
 Therefore the need for area and normal properties.
@@ -65,7 +65,7 @@ conversion:
   # Each level, the delta x between points is divided by two
   lvls_generate: [0, 1, 2, 3, 4, 5, 6]
   # Characteristics for nodes lvl 0 (least refined),
-  # other level can be deduced from it;
+  # other levels characteristics' can be deduced from it;
   lvl0:
     # Minimun possible area for triangles
     # Rule for next level:
@@ -85,6 +85,6 @@ conversion:
 
 Some of the known limitations are:
 
-- It cannot "derefine" triangles, this is, increase the size of triangles.
-- It can only divide triangles by area, not considering its angles, which may disturb points distribution.
-- It can only convert binary STL
+- It cannot "derefine" triangles, this is, increase the size of triangles. This limits the STL resolution, because its triangles cannot be smaller than the minimum possible area.
+- It can only divide triangles by area, not considering its angles. This may disturb points distribution.
+- It can only convert binary STL files

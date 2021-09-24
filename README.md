@@ -58,8 +58,10 @@ stl:
 output:
   # Where to save output files
   folder: "output/cube"
-  # Wheter to save as csv as well or not
+  # Save in csv format as well
   save_csv: true
+  # Copy original STL to output folder
+  copy_stl: true
 conversion:
   # Refinement levels to generate (considering Nassu's LBM levels)
   # Each level, the delta x between points is divided by two

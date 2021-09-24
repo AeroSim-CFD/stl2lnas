@@ -13,6 +13,7 @@ pub struct ConfigsSTL {
 pub struct ConfigsOutput {
     pub folder: String,
     pub save_csv: bool,
+    pub copy_stl: bool,
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
@@ -41,12 +42,25 @@ impl Configs {
         return Ok(f);
     }
 
+    fn save_stl_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
+        let filename = path::Path::new(self.output.folder.as_str());
+        // let stl_name = path::Path::new(self.stl.filename.as_str())
+        //     .file_name()
+        //     .unwrap();
+        fs::copy(&self.stl.filename, filename.join("original.stl"))?;
+        return Ok(());
+    }
+
     pub fn save_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
         let filename = path::Path::new(self.output.folder.as_str());
         let filename = filename.join("cfg.yaml");
         create_folder_for_filename(filename.as_path())?;
         let file = fs::File::create(filename.as_path())?;
         serde_yaml::to_writer(file, self)?;
+        if self.output.copy_stl {
+            self.save_stl_to_output_folder()?;
+        }
+
         return Ok(());
     }
 }

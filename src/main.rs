@@ -64,7 +64,7 @@ fn save_nodes_for_lvl(cfg: &Configs, lvl: u8, lagrangian_nodes: &Vec<LagrangianN
 }
 
 fn main() {
-    let cli_app = App::new("STL2LNAS")
+    let cli_app = App::new("stl2lnas")
         .author("Waine Oliveira Junior <waine@aerosim.io>")
         .about("Converts STL files to LNAS (Lagrangian Nassu format)")
         .arg(

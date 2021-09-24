@@ -1,6 +1,6 @@
-# STL2LNAS
+# stl2lnas
 
-Converter of STL binary files to Lagrangian Nassu (LNAS) format.
+Convert .stl files to Lagrangian Nassu (.lnas) format.
 
 It is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu), an LBM based CFD solver.
 
@@ -28,7 +28,7 @@ You can substitute `examples/convert_cube.yaml` for your configuration file.
 
 The Lagrangian Nassu format contains a set of points representing an object, each one with given normal and area.
 Its points should be distributed evenly on the object's surface.
-In order to do it, STL2LNAS implements triangles division (refining).
+In order to do it, ``stl2lnas`` implements triangles division (refining).
 
 The lagrangian nodes are used by IBM (Immersed Boundary Method) to represent a body and its physics.
 Therefore the need for area and normal properties.
@@ -40,9 +40,9 @@ minimun possible area: f32 (4 bytes)
 maximun possible area: f32 (4 bytes)
 number of points: usize (8 bytes)
 foreach point (28 bytes):
-    point's position (x, y, z): (f32, f32, f32)
-    point's normal (x, y, z): (f32, f32, f32)
-    point's area (x, y, z): f32
+    point's position (x, y, z): (f32, f32, f32) (12 bytes)
+    point's normal (x, y, z): (f32, f32, f32) (12 bytes)
+    point's area: f32 (4 bytes)
 end
 ```
 
@@ -85,6 +85,6 @@ conversion:
 
 Some of the known limitations are:
 
-- It cannot "derefine" a triangle, this is, remove a triangle and increase the size of its neighbours.
+- It cannot "derefine" triangles, this is, increase the size of triangles.
 - It can only divide triangles by area, not considering its angles, which may disturb points distribution.
 - It can only convert binary STL

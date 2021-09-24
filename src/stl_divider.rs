@@ -7,7 +7,7 @@ pub struct DividerSTL {
 }
 
 fn get_points_triangle_division(
-    triangle: TriangleSTL,
+    triangle: &TriangleSTL,
 ) -> [(utils::Vec3f, utils::Vec3f, utils::Vec3f); 4] {
     let (point0, point1, point2) = (triangle.point0, triangle.point1, triangle.point2);
 
@@ -49,7 +49,7 @@ impl DividerSTL {
     pub fn divide_triangle(&mut self, triangle: TriangleSTL) -> [TriangleSTL; 4] {
         self.remove_triangle(triangle);
 
-        let new_triangles_points = get_points_triangle_division(triangle);
+        let new_triangles_points = get_points_triangle_division(&triangle);
         let mut vec_new_triangle: Vec<TriangleSTL> = Vec::new();
         for t_p in new_triangles_points {
             let new_triangle: TriangleSTL = TriangleSTL::new(t_p.0, t_p.1, t_p.2, triangle.normal);

@@ -8,4 +8,4 @@ conversion:
   lvl0:
     min_area: 0.2
     max_area: 1.0
-    x_size: 2
+    x_size: 16

@@ -1,4 +1,5 @@
 use crate::lagrangian_node::{LagrangianNode, LAGRANGIAN_NODE_HEADER};
+use crate::utils::create_folder_for_filename;
 use csv::WriterBuilder;
 use std::error::Error;
 use std::{
@@ -8,16 +9,6 @@ use std::{
 };
 
 const HEADER_BINARY_FILE: &str = "LAGRANGIAN NODES NASSU";
-
-fn create_folder_for_filename(filename: &path::Path) -> Result<(), Box<dyn Error>> {
-    if filename.parent().is_some() {
-        if filename.parent().unwrap().exists() {
-            return Ok(());
-        }
-        fs::create_dir_all(filename.parent().unwrap())?;
-    }
-    return Ok(());
-}
 
 pub fn save_lagrangian_nodes_csv(
     filename: &path::Path,

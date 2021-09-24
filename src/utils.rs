@@ -9,7 +9,7 @@ macro_rules! assert_almost_equal {
 }
 
 use serde::Serialize;
-use std::{cmp::Ordering, convert::TryInto, fmt, hash, ops};
+use std::{cmp::Ordering, convert::TryInto, error::Error, fmt, fs, hash, ops, path};
 
 const PREC_DIGITS: i32 = 6i32;
 
@@ -18,9 +18,17 @@ fn truncate_float_to_int(f: f64, n_digits: i32) -> i64 {
     return y;
 }
 
-/*
-Algebraic Point
-*/
+pub fn create_folder_for_filename(filename: &path::Path) -> Result<(), Box<dyn Error>> {
+    if filename.parent().is_some() {
+        if filename.parent().unwrap().exists() {
+            return Ok(());
+        }
+        fs::create_dir_all(filename.parent().unwrap())?;
+    }
+    return Ok(());
+}
+
+/// Algebraic Point
 #[derive(Clone, Copy, Serialize)]
 pub struct Vec3f {
     pub x: f64,

@@ -1,3 +1,4 @@
+use crate::utils::create_folder_for_filename;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::error::Error;
@@ -43,6 +44,7 @@ impl Configs {
     pub fn save_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
         let filename = path::Path::new(self.output.folder.as_str());
         let filename = filename.join("cfg.yaml");
+        create_folder_for_filename(filename.as_path())?;
         let file = fs::File::create(filename.as_path())?;
         serde_yaml::to_writer(file, self)?;
         return Ok(());

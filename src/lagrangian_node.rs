@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use std::convert::TryInto;
 use std::fmt;
 
+/// Lagranngian node is defined by a position, with normal and area properties
 #[derive(Serialize)]
 pub struct LagrangianNode {
     pub pos: utils::Vec3f,
@@ -23,6 +24,11 @@ impl LagrangianNode {
         return LagrangianNode { pos, normal, area };
     }
 
+    /// Get lagrangian nodes as bytes in format:
+    ///
+    /// (pos.x, pos.y, pos.z, normal.x, normal.y, normal.z, area)
+    ///
+    /// totalizing 28 bytes
     pub fn get_le_bytes(&self) -> [u8; 28] {
         let mut vec = [
             self.pos.to_le_bytes_as_f32(),
@@ -36,6 +42,9 @@ impl LagrangianNode {
             .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
 
+    /// Build lagrangian node from triangle
+    ///
+    /// Position is triangle's middle point, normal and area are the same as triangle's
     pub fn from_triangle(t: &TriangleSTL) -> LagrangianNode {
         let mut triangle_middle_point = t.point0 + t.point1 + t.point2;
         triangle_middle_point.divide(3f64);
@@ -53,6 +62,7 @@ impl fmt::Display for LagrangianNode {
     }
 }
 
+/// Convert STL triangles to lagranagian nodes
 pub fn stl2lagrangian(triangles: HashSet<TriangleSTL>) -> Vec<LagrangianNode> {
     return triangles
         .iter()

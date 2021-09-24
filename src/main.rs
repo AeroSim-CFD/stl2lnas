@@ -5,10 +5,11 @@ pub mod stl_divider;
 pub mod stl_reader;
 pub mod stl_triangle;
 pub mod utils;
-use std::path;
 
 use cfg::Configs;
+use clap::{App, Arg};
 use lagrangian_node::LagrangianNode;
+use std::path;
 use stl_triangle::TriangleSTL;
 
 fn get_min_max_area_for_lvl(cfg: &Configs, lvl: u8) -> (f64, f64) {
@@ -63,7 +64,21 @@ fn save_nodes_for_lvl(cfg: &Configs, lvl: u8, lagrangian_nodes: &Vec<LagrangianN
 }
 
 fn main() {
-    let filename_cfg = "fixture/convert_cube.yaml";
+    let cli_app = App::new("STL2LNAS")
+        .author("Waine Oliveira Junior <waine@aerosim.io>")
+        .about("Converts STL files to LNAS (Lagrangian Nassu format)")
+        .arg(
+            Arg::with_name("cfg")
+                .short("c")
+                .long("cfg")
+                .value_name("YAML_FILE")
+                .help("Configuration file for conversion")
+                .required(true),
+        );
+
+    let matches = cli_app.get_matches();
+    let filename_cfg = matches.value_of("cfg").unwrap();
+
     let cfg = cfg::Configs::new(filename_cfg).unwrap();
 
     cfg.save_to_output_folder()

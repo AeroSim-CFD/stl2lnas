@@ -50,7 +50,8 @@ end
 
 Some STL and configuration examples are provided in the `examples` folder.
 
-The example below illustrates what each 
+The example below describes what each field does
+ 
 ```yaml
 stl:
   # STL to convert

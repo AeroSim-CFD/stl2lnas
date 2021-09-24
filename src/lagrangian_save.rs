@@ -60,7 +60,7 @@ pub fn save_lagrangian_nodes_lnas(
     create_folder_for_filename(filename)?;
 
     let header: &[u8] = HEADER_BINARY_FILE.as_bytes();
-    let number_of_nodes: [u8; 8] = lagrangian_nodes.iter().len().to_le_bytes();
+    let number_of_nodes: [u8; 8] = (lagrangian_nodes.iter().len() as u64).to_le_bytes();
     let nodes: Vec<[u8; 28]> = lagrangian_nodes
         .iter()
         .map(|nt| nt.get_le_bytes())

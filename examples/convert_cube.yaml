@@ -1,5 +1,5 @@
 stl:
-  filename: "fixture/stl/cube.stl"
+  filename: "examples/stl/cube.stl"
 output:
   folder: "output/cube"
   save_csv: true

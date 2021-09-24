@@ -2,7 +2,7 @@ stl:
   filename: "examples/stl/cube.stl"
 output:
   folder: "output/cube"
-  save_csv: false
+  save_csv: true
 conversion:
   lvls_generate: [0, 1, 2, 3, 4, 5]
   lvl0:

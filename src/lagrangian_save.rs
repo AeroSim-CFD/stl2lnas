@@ -44,9 +44,9 @@ fn write_to_bin_file(filename: &path::Path, v: &Vec<u8>) -> Result<(), io::Error
 /// # Lagrangian Nassu Format
 ///
 /// header: "LAGRANGIAN NODES NASSU" (22 bytes)
-/// number of nodes: u64 (8 bytes)
 /// min possible area: f32 (4 bytes)
 /// max possible area: f32 (4 bytes)
+/// number of nodes: u64 (8 bytes)
 /// nodes: pos.x, pos.y, pos.z, normal.x, normal.y, normal.z, area (f32 all, 28 bytes each)
 ///
 /// Always little endian
@@ -67,9 +67,9 @@ pub fn save_lagrangian_nodes_lnas(
         .collect();
 
     let mut bytes_write: Vec<u8> = header.to_vec();
-    bytes_write.extend(number_of_nodes.to_vec());
     bytes_write.extend(min_area.to_le_bytes().to_vec());
     bytes_write.extend(max_area.to_le_bytes().to_vec());
+    bytes_write.extend(number_of_nodes.to_vec());
     for n in nodes {
         bytes_write.extend(n.to_vec());
     }

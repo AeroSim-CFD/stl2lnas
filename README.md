@@ -25,26 +25,46 @@ cargo run --release -- --cfg examples/convert_cube.yaml
 
 You can substitute `examples/convert_cube.yaml` with your configuration file.
 
-## Lagrangian Nassu format
+## Lagrangian Nassu format (.lnas)
 
-The Lagrangian Nassu format contains a set of points representing a body. 
-Each point has a normal and an area, and they should be evenly distributed over the body's surface.
+The Lagrangian Nassu format contains informations for representing a body. 
+It follows similar compact strategy as [Wavefront obj format](https://en.wikipedia.org/wiki/Wavefront_.obj_file), but restricts its polygons to triangles.
 
-The lagrangian nodes are used by IBM (Immersed Boundary Method) to represent a body and its physics.
-Therefore the need for area and normal properties.
+The format is used to define nodes (points) that are used by IBM (Immersed Boundary Method) to represent a body and its physics.
 
 The format definition is:
+```yaml
+# Format version. Every major, breaks compatibility 
+# v0.2.0 is not compatible with v0.1.0, but it is with v0.2.0)
+version: "v0.2.0"
+# Name to use for export
+name: "cube"
+# Size to use in x for normalization
+normalization_x: 16.0
+geometry:
+  # Points are represented as a list [(x0, y0, z0), (x1, y1, z1), ..., (xk, yk, zk)] in f32
+  points: "base64"
+  # Triangles are represented as a list [(p01, p02, p03), (p11, p12, p13), ..., (pn1, pn2, pn3)] in u32
+  # Where each value in the triple is the point index in the `points` list.
+  triangles: "base64"
+  # Normal may be recovered using "right hand" rule. 
+  # That is, it considers rotation in sequence p1->p2->p3, so normal is
+  # U = p2 - p1; V = p3 - p1 then the normal N = U X V
 ```
-header: "LAGRANGIAN NASSU NODES" (22 bytes)
-minimun possible area: f32 (4 bytes)
-maximun possible area: f32 (4 bytes)
-number of points: u64 (8 bytes)
-foreach point (28 bytes):
-    point's position (x, y, z): (f32, f32, f32) (12 bytes)
-    point's normal (x, y, z): (f32, f32, f32) (12 bytes)
-    point's area: f32 (4 bytes)
-end
-```
+
+### Compactation impact
+
+The compactation of `.lnas` format is mainly due to not repeating the vertices shared between triangles.
+So the impact of it increases with the number of shared vertices.
+
+It also uses the points order in the triangle to store the triangle's normal information, not needing to explicitly specify it.
+
+The number of floating points from STL to LNAS may be calculated by:
+
+$N_{LNAS} = V_{STL} + \frac{T_{STL}}{2S}$
+
+Where $V_{STL}$ is the number of unique vertices, $T_{STL}$ the number of triangles and $S$ the average number of triangles that a vertice shares.
+
 
 ## Configuration files
 
@@ -64,24 +84,8 @@ output:
   # Copy original STL to output folder
   copy_stl: true
 conversion:
-  # Refinement levels to generate (considering Nassu's LBM levels)
-  # Each level, the delta x between points is divided by two
-  lvls_generate: [0, 1, 2, 3, 4, 5, 6]
-  # Characteristics for nodes lvl 0 (least refined),
-  # other levels characteristics' can be deduced from it;
-  lvl0:
-    # Minimun possible area for triangles
-    # Rule for next level:
-    # min_area(n+1) = min_area(n)/4
-    min_area: 0.2
-    # Maximun possible area for triangles
-    # Rule for next level:
-    # max_area(n+1) = max_area(n)/4
-    max_area: 1.0
-    # Object's size in x
-    # Rule for next level:
-    # x_size(n+1) = x_size(n)/2
-    x_size: 2
+  # Size in x to use
+  x_size: 2
 ```
 
 ## Limitations
@@ -89,5 +93,5 @@ conversion:
 Some of the known limitations are:
 
 - It cannot "derefine" triangles, this is, increase the size of triangles. This limits the STL resolution, because its triangles cannot be smaller than the minimum possible area.
-- It can only divide triangles by area, not considering its angles. This may disturb points distribution.
+- It does not consider triangle angles. This may disturb points distribution.
 - It can only convert binary STL files

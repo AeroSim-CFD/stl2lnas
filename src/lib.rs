@@ -6,6 +6,8 @@ pub mod lagrangian {
 }
 
 pub mod cfg;
-pub mod stl_reader;
-pub mod stl_triangle;
+pub mod stl {
+    pub mod reader;
+    pub mod triangle;
+}
 pub mod utils;

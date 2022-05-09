@@ -48,6 +48,18 @@ impl Vec3u {
     }
 }
 
+impl Vec3u {
+    pub fn to_le_bytes_as_f32(self) -> Vec<u8> {
+        return [
+            (self.x as f32).to_le_bytes(),
+            (self.y as f32).to_le_bytes(),
+            (self.z as f32).to_le_bytes(),
+        ]
+        .concat();
+        // .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+    }
+}
+
 impl fmt::Display for Vec3u {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return write!(f, "({}, {}, {})", self.x, self.y, self.z);
@@ -116,15 +128,14 @@ impl Vec3f {
         return Vec3f { x, y, z };
     }
 
-    pub fn to_le_bytes_as_f32(self) -> [u8; 12] {
+    pub fn to_le_bytes_as_f32(self) -> Vec<u8> {
         return [
             (self.x as f32).to_le_bytes(),
             (self.y as f32).to_le_bytes(),
             (self.z as f32).to_le_bytes(),
         ]
-        .concat()
-        .try_into()
-        .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+        .concat();
+        // .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
 }
 

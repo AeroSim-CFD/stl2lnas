@@ -2,11 +2,6 @@ stl:
   filename: "examples/stl/cube.stl"
 output:
   folder: "output/cube"
-  copy_stl: true
-  save_csv: true
+name: cube
 conversion:
-  lvls_generate: [0, 1, 2, 3, 4, 5]
-  lvl0:
-    min_area: 0.2
-    max_area: 1.0
-    x_size: 16
+  normalization_x: 3.5

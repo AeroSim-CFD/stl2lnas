@@ -1,0 +1,7 @@
+stl:
+  filename: "examples/stl/terrain.stl"
+output:
+  folder: "output/terrain"
+name: terrain
+conversion:
+  normalization_x: 100

@@ -1,6 +1,5 @@
 use crate::assert_almost_equal;
 use crate::utils;
-use std::cmp;
 use std::fmt;
 
 #[derive(Clone, Copy, Hash)]
@@ -119,17 +118,23 @@ pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f32) -> V
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::stl_reader::read_stl;
+    use crate::stl::reader::read_stl;
     use crate::utils::almost_equal;
 
-    fn check_normalization(norm_triangles: Vec<TriangleSTL>, norm_dist: f32) {
+    fn check_normalization(
+        orig_triangles: Vec<TriangleSTL>,
+        norm_triangles: Vec<TriangleSTL>,
+        norm_dist: f32,
+    ) {
         for t in norm_triangles.iter() {
             for p in [&t.point0, &t.point1, &t.point2] {
-                if (p.x < 0f32 || p.x > norm_dist) {
-                    panic!(format!("Point {} x is not between 0 and {}", p, norm_dist));
+                if p.x < 0f32 || p.x > norm_dist {
+                    panic!("Point {} x is not between 0 and {}", p, norm_dist);
                 }
             }
         }
+        assert_eq!(norm_triangles.len(), orig_triangles.len());
+
         let max_x = norm_triangles
             .iter()
             .flat_map(|t: &TriangleSTL| Vec::from([t.point0.x, t.point1.x, t.point2.x]))
@@ -155,7 +160,7 @@ mod tests {
         let norm_dist: f32 = 3.5;
         let triangles = read_stl(&filename);
         let norm_triangles = normalize_triangles(&triangles, norm_dist);
-        check_normalization(norm_triangles, norm_dist);
+        check_normalization(triangles, norm_triangles, norm_dist);
     }
 
     #[test]
@@ -164,6 +169,6 @@ mod tests {
         let norm_dist: f32 = 15.0;
         let triangles = read_stl(&filename);
         let norm_triangles = normalize_triangles(&triangles, norm_dist);
-        check_normalization(norm_triangles, norm_dist);
+        check_normalization(triangles, norm_triangles, norm_dist);
     }
 }

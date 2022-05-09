@@ -1,4 +1,5 @@
-use crate::{stl_triangle, utils::Vec3f};
+use crate::stl::triangle::TriangleSTL;
+use crate::utils::Vec3f;
 use std::{convert::TryInto, fs};
 
 const POINT_BYTE_SIZE: usize = 12;
@@ -37,19 +38,19 @@ fn number_of_triangles(stl_content: &Vec<u8>) -> u32 {
     return n_triangles;
 }
 
-fn bytes_to_triangle(b: &[u8; TRIANGLE_BYTES_SIZE]) -> stl_triangle::TriangleSTL {
+fn bytes_to_triangle(b: &[u8; TRIANGLE_BYTES_SIZE]) -> TriangleSTL {
     let normal = bytes_to_Vec3f(b[..12].try_into().expect("Invalid file format (point 0)"));
     let point0 = bytes_to_Vec3f(b[12..24].try_into().expect("Invalid file format (point 1)"));
     let point1 = bytes_to_Vec3f(b[24..36].try_into().expect("Invalid file format (point 2)"));
     let point2 = bytes_to_Vec3f(b[36..48].try_into().expect("Invalid file format (normal)"));
     // 2 points are for attribute byte count
-    return stl_triangle::TriangleSTL::new(point0, point1, point2, normal);
+    return TriangleSTL::new(point0, point1, point2, normal);
 }
 
-fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<stl_triangle::TriangleSTL> {
+fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<TriangleSTL> {
     // + 4 due to triangle numbers
     let start_byte = HEADER_BYTES_SIZE + 4;
-    let mut all_triangles: Vec<stl_triangle::TriangleSTL> = Vec::new();
+    let mut all_triangles: Vec<TriangleSTL> = Vec::new();
     for i in 0..n_triangles {
         let curr_byte_idx = start_byte + TRIANGLE_BYTES_SIZE * (i as usize);
         let curr_triangle_bytes: &[u8; TRIANGLE_BYTES_SIZE] = stl_content
@@ -63,7 +64,7 @@ fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<stl_triang
     return all_triangles;
 }
 
-pub fn read_stl(filename: &str) -> Vec<stl_triangle::TriangleSTL> {
+pub fn read_stl(filename: &str) -> Vec<TriangleSTL> {
     let stl_content = read_file(filename);
     let n_triangles = number_of_triangles(&stl_content);
     let triangles = triangles_from_stl(&stl_content, n_triangles);
@@ -77,7 +78,9 @@ mod tests {
     #[test]
     fn can_read_stl_cube() {
         let filename = String::from("examples/stl/cube.stl");
-        read_stl(&filename);
+        let triangles = read_stl(&filename);
+        // Cube has 2 triangles each face
+        assert_eq!(triangles.len(), 6 * 2);
     }
 
     #[test]

@@ -1,5 +1,6 @@
 use crate::assert_almost_equal;
 use crate::utils;
+use std::cmp;
 use std::fmt;
 
 #[derive(Clone, Copy, Hash)]
@@ -17,7 +18,7 @@ impl TriangleSTL {
         point2: utils::Vec3f,
         normal: utils::Vec3f,
     ) -> TriangleSTL {
-        assert_almost_equal!(&normal.norm(), 1.0, 1e-5f64);
+        assert_almost_equal!(&normal.norm(), 1.0, 1e-5f32);
         return TriangleSTL {
             point0,
             point1,
@@ -26,18 +27,10 @@ impl TriangleSTL {
         };
     }
 
-    pub fn normalize(&mut self, factor: f64, offset: utils::Vec3f) {
+    pub fn normalize(&mut self, factor: f32, offset: utils::Vec3f) {
         self.point0.transform(factor, offset);
         self.point1.transform(factor, offset);
         self.point2.transform(factor, offset);
-    }
-
-    pub fn area(self) -> f64 {
-        let tr_vec1 = self.point0 - self.point1;
-        let tr_vec2 = self.point2 - self.point1;
-        let cross_prod: utils::Vec3f = tr_vec1.cross(tr_vec2);
-        let area = cross_prod.norm();
-        return area;
     }
 }
 
@@ -65,8 +58,8 @@ impl fmt::Display for TriangleSTL {
 fn get_factor_offset(
     min_vals: utils::Vec3f,
     max_vals: utils::Vec3f,
-    total_dist_x: f64,
-) -> (f64, utils::Vec3f) {
+    total_dist_x: f32,
+) -> (f32, utils::Vec3f) {
     // Params are: the minimal value, and the difference between min_max for x
     // These can be used to normalize points
     let mul_factor = total_dist_x / (max_vals.x - min_vals.x); // normalize between 0 and total_dist
@@ -80,17 +73,17 @@ fn get_factor_offset(
 
 fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (utils::Vec3f, utils::Vec3f) {
     let mut min_vals = utils::Vec3f {
-        x: f64::MAX,
-        y: f64::MAX,
-        z: f64::MAX,
+        x: f32::MAX,
+        y: f32::MAX,
+        z: f32::MAX,
     };
     let mut max_vals = utils::Vec3f {
-        x: f64::MIN,
-        y: f64::MIN,
-        z: f64::MIN,
+        x: f32::MIN,
+        y: f32::MIN,
+        z: f32::MIN,
     };
     for t in triangles {
-        for p in [t.point0, t.point1, t.point2] {
+        for p in [&t.point0, &t.point1, &t.point2] {
             if p.x < min_vals.x {
                 min_vals.x = p.x;
             } else if p.x > max_vals.x {
@@ -111,7 +104,7 @@ fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (utils::Vec3f, utils::
     return (min_vals, max_vals);
 }
 
-pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f64) -> Vec<TriangleSTL> {
+pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f32) -> Vec<TriangleSTL> {
     let (min_vals, max_vals) = get_triangles_min_max(&triangles);
     let (mul_factor, offset) = get_factor_offset(min_vals, max_vals, total_dist_x);
     let mut normalized_triangles: Vec<TriangleSTL> = Vec::new();
@@ -121,4 +114,56 @@ pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f64) -> V
         normalized_triangles.push(normalized_t);
     }
     return normalized_triangles;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::stl_reader::read_stl;
+    use crate::utils::almost_equal;
+
+    fn check_normalization(norm_triangles: Vec<TriangleSTL>, norm_dist: f32) {
+        for t in norm_triangles.iter() {
+            for p in [&t.point0, &t.point1, &t.point2] {
+                if (p.x < 0f32 || p.x > norm_dist) {
+                    panic!(format!("Point {} x is not between 0 and {}", p, norm_dist));
+                }
+            }
+        }
+        let max_x = norm_triangles
+            .iter()
+            .flat_map(|t: &TriangleSTL| Vec::from([t.point0.x, t.point1.x, t.point2.x]))
+            .max_by(|x, y| x.partial_cmp(y).unwrap())
+            .unwrap();
+        let min_x = norm_triangles
+            .iter()
+            .flat_map(|t: &TriangleSTL| Vec::from([t.point0.x, t.point1.x, t.point2.x]))
+            .min_by(|x, y| x.partial_cmp(y).unwrap())
+            .unwrap();
+
+        if !almost_equal(max_x, norm_dist) {
+            panic!("Max is not same as {}", norm_dist);
+        }
+        if !almost_equal(min_x, 0f32) {
+            panic!("Min is not same as 0");
+        }
+    }
+
+    #[test]
+    fn normalizes_stl_cube() {
+        let filename = String::from("examples/stl/cube.stl");
+        let norm_dist: f32 = 3.5;
+        let triangles = read_stl(&filename);
+        let norm_triangles = normalize_triangles(&triangles, norm_dist);
+        check_normalization(norm_triangles, norm_dist);
+    }
+
+    #[test]
+    fn normalizes_stl_terrain() {
+        let filename = String::from("examples/stl/terrain.stl");
+        let norm_dist: f32 = 15.0;
+        let triangles = read_stl(&filename);
+        let norm_triangles = normalize_triangles(&triangles, norm_dist);
+        check_normalization(norm_triangles, norm_dist);
+    }
 }

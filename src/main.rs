@@ -1,66 +1,44 @@
+mod lagrangian {
+    pub mod format;
+    pub mod save;
+    pub mod triangle;
+    pub mod vertice;
+}
+
 pub mod cfg;
-pub mod lagrangian_node;
-pub mod lagrangian_save;
-pub mod stl_divider;
 pub mod stl_reader;
 pub mod stl_triangle;
 pub mod utils;
 
 use cfg::Configs;
 use clap::{App, Arg};
-use lagrangian_node::LagrangianNode;
+use lagrangian::triangle::LagrangianTriangle;
+use lagrangian::vertice::LagrangianVertice;
 use std::path;
 use stl_triangle::TriangleSTL;
-
-fn get_min_max_area_for_lvl(cfg: &Configs, lvl: u8) -> (f64, f64) {
-    // Factor to wich divide lvl 0 area.
-    // At each level, dist is divided by 2, so area is divided by 4 (2^2)
-    let area_factor = 4u32.pow(lvl as u32) as f32;
-    let (min_area, max_area) = (
-        cfg.conversion.lvl0.min_area / area_factor,
-        cfg.conversion.lvl0.max_area / area_factor,
-    );
-    return (min_area as f64, max_area as f64);
-}
 
 fn get_normalized_triangles(cfg: &Configs) -> Vec<TriangleSTL> {
     let triangles = stl_reader::read_stl(cfg.stl.filename.as_str());
     let triangles =
-        stl_triangle::normalize_triangles(&triangles, cfg.conversion.lvl0.x_size as f64);
+        stl_triangle::normalize_triangles(&triangles, cfg.conversion.normalization_x as f32);
     return triangles;
 }
 
-fn generate_lagrangian_nodes_for_lvl(
+fn save_lnas(
     cfg: &Configs,
-    lvl: u8,
-    orig_triangles: &Vec<TriangleSTL>,
-) -> Vec<LagrangianNode> {
-    let (min_area, max_area) = get_min_max_area_for_lvl(cfg, lvl);
-    let mut div_stl = stl_divider::DividerSTL::new(orig_triangles.clone());
-    div_stl.divide_stl_by_area(max_area, min_area);
-
-    let lagrangian_nodes = lagrangian_node::stl2lagrangian(div_stl.triangles);
-    return lagrangian_nodes;
-}
-
-fn save_nodes_for_lvl(cfg: &Configs, lvl: u8, lagrangian_nodes: &Vec<LagrangianNode>) {
+    lagrangian_vertices: &Vec<LagrangianVertice>,
+    lagrangian_triangles: &Vec<LagrangianTriangle>,
+) {
     let folder_path = path::Path::new(&cfg.output.folder);
-    let (min_area, max_area) = get_min_max_area_for_lvl(cfg, lvl);
 
-    let lnas_filename = folder_path.join(format!("lvl{:02}.lnas", lvl));
-    lagrangian_save::save_lagrangian_nodes_lnas(
+    let lnas_filename = folder_path.join(format!("{}.lnas", cfg.name));
+    lagrangian::save::save_lagrangian_nodes_lnas(
         lnas_filename.as_path(),
-        lagrangian_nodes,
-        min_area as f32,
-        max_area as f32,
+        cfg,
+        lagrangian_vertices,
+        lagrangian_triangles,
     )
-    .unwrap_or_else(|e| println!("Saving lnas error for lvl {}. Error: {}", lvl, e));
-
-    if cfg.output.save_csv {
-        let csv_filename = folder_path.join(format!("lvl{:02}.csv", lvl));
-        lagrangian_save::save_lagrangian_nodes_csv(csv_filename.as_path(), lagrangian_nodes)
-            .unwrap_or_else(|e| println!("Saving csv error for lvl {}. Error: {}", lvl, e));
-    }
+    .unwrap_or_else(|e| println!("Saving lnas error. Error: {}", e));
 }
 
 fn main() {
@@ -85,9 +63,9 @@ fn main() {
         .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
 
     let orig_triangles = get_normalized_triangles(&cfg);
-    for lvl in cfg.conversion.lvls_generate.iter() {
-        let lagrangian_nodes = generate_lagrangian_nodes_for_lvl(&cfg, *lvl, &orig_triangles);
-        save_nodes_for_lvl(&cfg, *lvl, &lagrangian_nodes);
-        println!("Generated level {}!", lvl);
-    }
+    let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&orig_triangles);
+    let lagrangian_triangles =
+        lagrangian::triangle::generate_lagrangian_triangles(&lagrangian_vertices, &orig_triangles);
+    save_lnas(&cfg, &lagrangian_vertices, &lagrangian_triangles);
+    println!("Generated!");
 }

@@ -12,26 +12,17 @@ pub struct ConfigsSTL {
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ConfigsOutput {
     pub folder: String,
-    pub save_csv: bool,
-    pub copy_stl: bool,
-}
-
-#[derive(PartialEq, Serialize, Deserialize)]
-pub struct ConfigsLvl0 {
-    pub x_size: f32,
-    pub min_area: f32,
-    pub max_area: f32,
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ConfigsConversion {
-    pub lvls_generate: Vec<u8>,
-    pub lvl0: ConfigsLvl0,
+    pub normalization_x: f32,
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct Configs {
     pub stl: ConfigsSTL,
+    pub name: String,
     pub conversion: ConfigsConversion,
     pub output: ConfigsOutput,
 }
@@ -44,10 +35,10 @@ impl Configs {
 
     fn save_stl_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
         let filename = path::Path::new(self.output.folder.as_str());
-        // let stl_name = path::Path::new(self.stl.filename.as_str())
-        //     .file_name()
-        //     .unwrap();
-        fs::copy(&self.stl.filename, filename.join("original.stl"))?;
+        fs::copy(
+            &self.stl.filename,
+            filename.join(format!("{}.stl", self.name)),
+        )?;
         return Ok(());
     }
 
@@ -57,10 +48,8 @@ impl Configs {
         create_folder_for_filename(filename.as_path())?;
         let file = fs::File::create(filename.as_path())?;
         serde_yaml::to_writer(file, self)?;
-        if self.output.copy_stl {
-            self.save_stl_to_output_folder()?;
-        }
 
+        self.save_stl_to_output_folder()?;
         return Ok(());
     }
 }

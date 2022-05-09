@@ -22,9 +22,9 @@ fn bytes_to_f32(b: &[u8; 4]) -> f32 {
 #[allow(non_snake_case)]
 fn bytes_to_Vec3f(b: &[u8; POINT_BYTE_SIZE]) -> Vec3f {
     return Vec3f {
-        x: bytes_to_f32(b[..4].try_into().expect("Invalid point bytes")) as f64,
-        y: bytes_to_f32(b[4..8].try_into().expect("Invalid point bytes")) as f64,
-        z: bytes_to_f32(b[8..12].try_into().expect("Invalid point bytes")) as f64,
+        x: bytes_to_f32(b[..4].try_into().expect("Invalid point bytes")) as f32,
+        y: bytes_to_f32(b[4..8].try_into().expect("Invalid point bytes")) as f32,
+        z: bytes_to_f32(b[8..12].try_into().expect("Invalid point bytes")) as f32,
     };
 }
 
@@ -68,4 +68,21 @@ pub fn read_stl(filename: &str) -> Vec<stl_triangle::TriangleSTL> {
     let n_triangles = number_of_triangles(&stl_content);
     let triangles = triangles_from_stl(&stl_content, n_triangles);
     return triangles;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_read_stl_cube() {
+        let filename = String::from("examples/stl/cube.stl");
+        read_stl(&filename);
+    }
+
+    #[test]
+    fn can_read_stl_terrain() {
+        let filename = String::from("examples/stl/terrain.stl");
+        read_stl(&filename);
+    }
 }

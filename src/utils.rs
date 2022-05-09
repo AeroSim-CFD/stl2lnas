@@ -11,10 +11,10 @@ macro_rules! assert_almost_equal {
 use serde::Serialize;
 use std::{cmp::Ordering, convert::TryInto, error::Error, fmt, fs, hash, ops, path};
 
-const PREC_DIGITS: i32 = 6i32;
+const PREC_DIGITS: i32 = 5i32;
 
-fn truncate_float_to_int(f: f64, n_digits: i32) -> i64 {
-    let y = (f * 10f64.powi(n_digits)).round() as i64;
+fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
+    let y = (f * 10f32.powi(n_digits)).round() as i32;
     return y;
 }
 
@@ -28,16 +28,42 @@ pub fn create_folder_for_filename(filename: &path::Path) -> Result<(), Box<dyn E
     return Ok(());
 }
 
+#[derive(Clone, Copy, Serialize)]
+pub struct Vec3u {
+    pub x: u32,
+    pub y: u32,
+    pub z: u32,
+}
+
+impl Vec3u {
+    pub fn to_le_bytes_as_u32(self) -> [u8; 12] {
+        return [
+            (self.x as f32).to_le_bytes(),
+            (self.y as f32).to_le_bytes(),
+            (self.z as f32).to_le_bytes(),
+        ]
+        .concat()
+        .try_into()
+        .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+    }
+}
+
+impl fmt::Display for Vec3u {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "({}, {}, {})", self.x, self.y, self.z);
+    }
+}
+
 /// Algebraic Point
 #[derive(Clone, Copy, Serialize)]
 pub struct Vec3f {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 impl Vec3f {
-    pub fn norm(self) -> f64 {
+    pub fn norm(self) -> f32 {
         return (self.dot(self)).sqrt();
     }
 
@@ -45,22 +71,22 @@ impl Vec3f {
         self.divide(self.norm());
     }
 
-    pub fn dot(self, other: Vec3f) -> f64 {
+    pub fn dot(self, other: Vec3f) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    pub fn transform(&mut self, factor: f64, offset: Self) {
+    pub fn transform(&mut self, factor: f32, offset: Self) {
         *self = *self - offset;
         self.multiply(factor)
     }
 
-    pub fn divide(&mut self, denominator: f64) {
+    pub fn divide(&mut self, denominator: f32) {
         self.x /= denominator;
         self.y /= denominator;
         self.z /= denominator;
     }
 
-    pub fn multiply(&mut self, factor: f64) {
+    pub fn multiply(&mut self, factor: f32) {
         self.x *= factor;
         self.y *= factor;
         self.z *= factor;
@@ -76,15 +102,15 @@ impl Vec3f {
 
     pub fn abs(self) -> Self {
         let mut x = self.x;
-        if x < 0f64 {
+        if x < 0f32 {
             x = -x;
         }
         let mut y = self.y;
-        if y < 0f64 {
+        if y < 0f32 {
             y = -y;
         }
         let mut z = self.z;
-        if z < 0f64 {
+        if z < 0f32 {
             z = -z;
         }
         return Vec3f { x, y, z };
@@ -102,7 +128,7 @@ impl Vec3f {
     }
 }
 
-pub fn almost_equal(x: f64, y: f64) -> bool {
+pub fn almost_equal(x: f32, y: f32) -> bool {
     return truncate_float_to_int(x, PREC_DIGITS) == truncate_float_to_int(y, PREC_DIGITS);
 }
 

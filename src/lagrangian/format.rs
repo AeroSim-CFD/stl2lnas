@@ -53,7 +53,6 @@ mod tests {
     use crate::lagrangian::triangle::generate_lagrangian_triangles;
     use crate::lagrangian::vertice::generate_lagrangian_vertices;
     use crate::stl::reader::read_stl;
-    use crate::utils::almost_equal;
 
     fn check_vertices_compatibility(
         lagrangian_vertices: &HashMap<LagrangianVertice, usize>,

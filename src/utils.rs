@@ -18,6 +18,23 @@ fn truncate_float_to_int(f: f32, n_digits: i32) -> i32 {
     return y;
 }
 
+// I don't know how to check endianess, but this is the way that it works
+pub fn bytes_to_u32_be(b: &[u8; 4]) -> u32 {
+    return u32::from_be_bytes([b[0], b[1], b[2], b[3]]);
+}
+
+pub fn bytes_to_f32_be(b: &[u8; 4]) -> f32 {
+    return f32::from_be_bytes([b[0], b[1], b[2], b[3]]);
+}
+
+pub fn bytes_to_u32_le(b: &[u8; 4]) -> u32 {
+    return u32::from_le_bytes([b[0], b[1], b[2], b[3]]);
+}
+
+pub fn bytes_to_f32_le(b: &[u8; 4]) -> f32 {
+    return f32::from_le_bytes([b[0], b[1], b[2], b[3]]);
+}
+
 pub fn create_folder_for_filename(filename: &path::Path) -> Result<(), Box<dyn Error>> {
     if filename.parent().is_some() {
         if filename.parent().unwrap().exists() {
@@ -28,7 +45,7 @@ pub fn create_folder_for_filename(filename: &path::Path) -> Result<(), Box<dyn E
     return Ok(());
 }
 
-#[derive(Clone, Copy, Serialize)]
+#[derive(Clone, Copy, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Vec3u {
     pub x: u32,
     pub y: u32,
@@ -38,25 +55,29 @@ pub struct Vec3u {
 impl Vec3u {
     pub fn to_le_bytes_as_u32(self) -> [u8; 12] {
         return [
-            (self.x as f32).to_le_bytes(),
-            (self.y as f32).to_le_bytes(),
-            (self.z as f32).to_le_bytes(),
+            (self.x as u32).to_le_bytes(),
+            (self.y as u32).to_le_bytes(),
+            (self.z as u32).to_le_bytes(),
         ]
         .concat()
         .try_into()
         .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
     }
-}
 
-impl Vec3u {
-    pub fn to_le_bytes_as_f32(self) -> Vec<u8> {
-        return [
-            (self.x as f32).to_le_bytes(),
-            (self.y as f32).to_le_bytes(),
-            (self.z as f32).to_le_bytes(),
-        ]
-        .concat();
-        // .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+    pub fn from_bytes_be(vec_bytes: &Vec<u8>) -> Vec3u {
+        return Vec3u {
+            x: bytes_to_u32_be(vec_bytes[..4].try_into().expect("Invalid point bytes")) as u32,
+            y: bytes_to_u32_be(vec_bytes[4..8].try_into().expect("Invalid point bytes")) as u32,
+            z: bytes_to_u32_be(vec_bytes[8..12].try_into().expect("Invalid point bytes")) as u32,
+        };
+    }
+
+    pub fn from_bytes_le(vec_bytes: &Vec<u8>) -> Vec3u {
+        return Vec3u {
+            x: bytes_to_u32_le(vec_bytes[..4].try_into().expect("Invalid point bytes")) as u32,
+            y: bytes_to_u32_le(vec_bytes[4..8].try_into().expect("Invalid point bytes")) as u32,
+            z: bytes_to_u32_le(vec_bytes[8..12].try_into().expect("Invalid point bytes")) as u32,
+        };
     }
 }
 
@@ -67,7 +88,7 @@ impl fmt::Display for Vec3u {
 }
 
 /// Algebraic Point
-#[derive(Clone, Copy, Serialize)]
+#[derive(Clone, Copy, Serialize, Debug)]
 pub struct Vec3f {
     pub x: f32,
     pub y: f32,
@@ -136,6 +157,22 @@ impl Vec3f {
         ]
         .concat();
         // .unwrap_or_else(|v: Vec<u8>| panic!("Expected a Vec of length 12, got {}", v.len()));
+    }
+
+    pub fn from_bytes_be(vec_bytes: &Vec<u8>) -> Vec3f {
+        return Vec3f {
+            x: bytes_to_f32_be(vec_bytes[..4].try_into().expect("Invalid point bytes")) as f32,
+            y: bytes_to_f32_be(vec_bytes[4..8].try_into().expect("Invalid point bytes")) as f32,
+            z: bytes_to_f32_be(vec_bytes[8..12].try_into().expect("Invalid point bytes")) as f32,
+        };
+    }
+
+    pub fn from_bytes_le(vec_bytes: &Vec<u8>) -> Vec3f {
+        return Vec3f {
+            x: bytes_to_f32_le(vec_bytes[..4].try_into().expect("Invalid point bytes")) as f32,
+            y: bytes_to_f32_le(vec_bytes[4..8].try_into().expect("Invalid point bytes")) as f32,
+            z: bytes_to_f32_le(vec_bytes[8..12].try_into().expect("Invalid point bytes")) as f32,
+        };
     }
 }
 

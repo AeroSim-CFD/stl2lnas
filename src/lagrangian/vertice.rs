@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 /// Lagranngian node is defined by a position, with normal and area properties
-#[derive(Serialize, Hash, PartialEq, Eq, Copy, Clone)]
+#[derive(Serialize, Hash, PartialEq, Eq, Copy, Clone, Debug)]
 pub struct LagrangianVertice {
     pub pos: Vec3f,
 }

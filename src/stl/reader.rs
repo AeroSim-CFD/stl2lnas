@@ -1,8 +1,7 @@
 use crate::stl::triangle::TriangleSTL;
-use crate::utils::Vec3f;
+use crate::utils::{bytes_to_u32_le, Vec3f};
 use std::{convert::TryInto, fs};
 
-const POINT_BYTE_SIZE: usize = 12;
 const TRIANGLE_BYTES_SIZE: usize = 50;
 const HEADER_BYTES_SIZE: usize = 80;
 
@@ -11,38 +10,22 @@ fn read_file(filename: &str) -> Vec<u8> {
     return content;
 }
 
-// I don't know how to check endianess, but this is the way that it works
-fn bytes_to_u32(b: &[u8; 4]) -> u32 {
-    return u32::from_be_bytes([b[3], b[2], b[1], b[0]]);
-}
-
-fn bytes_to_f32(b: &[u8; 4]) -> f32 {
-    return f32::from_be_bytes([b[3], b[2], b[1], b[0]]);
-}
-
-#[allow(non_snake_case)]
-fn bytes_to_Vec3f(b: &[u8; POINT_BYTE_SIZE]) -> Vec3f {
-    return Vec3f {
-        x: bytes_to_f32(b[..4].try_into().expect("Invalid point bytes")) as f32,
-        y: bytes_to_f32(b[4..8].try_into().expect("Invalid point bytes")) as f32,
-        z: bytes_to_f32(b[8..12].try_into().expect("Invalid point bytes")) as f32,
-    };
-}
-
 fn number_of_triangles(stl_content: &Vec<u8>) -> u32 {
     // 80 bytes of header, then the number of triangles as u32 (4 bytes)
     let n_triangles_bytes: [u8; 4] = stl_content[HEADER_BYTES_SIZE..HEADER_BYTES_SIZE + 4]
         .try_into()
         .expect("Invalid file format (number of triangles)");
-    let n_triangles = bytes_to_u32(&n_triangles_bytes);
+    let n_triangles = bytes_to_u32_le(&n_triangles_bytes);
     return n_triangles;
 }
 
 fn bytes_to_triangle(b: &[u8; TRIANGLE_BYTES_SIZE]) -> TriangleSTL {
-    let normal = bytes_to_Vec3f(b[..12].try_into().expect("Invalid file format (point 0)"));
-    let point0 = bytes_to_Vec3f(b[12..24].try_into().expect("Invalid file format (point 1)"));
-    let point1 = bytes_to_Vec3f(b[24..36].try_into().expect("Invalid file format (point 2)"));
-    let point2 = bytes_to_Vec3f(b[36..48].try_into().expect("Invalid file format (normal)"));
+    let normal = Vec3f::from_bytes_le(&b[..12].try_into().expect("Invalid file format (point 0)"));
+    let point0 =
+        Vec3f::from_bytes_le(&b[12..24].try_into().expect("Invalid file format (point 1)"));
+    let point1 =
+        Vec3f::from_bytes_le(&b[24..36].try_into().expect("Invalid file format (point 2)"));
+    let point2 = Vec3f::from_bytes_le(&b[36..48].try_into().expect("Invalid file format (normal)"));
     // 2 points are for attribute byte count
     return TriangleSTL::new(point0, point1, point2, normal);
 }

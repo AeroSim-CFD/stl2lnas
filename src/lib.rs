@@ -1,5 +1,6 @@
 pub mod lagrangian {
     pub mod format;
+    pub mod join;
     pub mod save;
     pub mod triangle;
     pub mod vertice;

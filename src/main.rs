@@ -1,5 +1,6 @@
 pub mod lagrangian {
     pub mod format;
+    pub mod join;
     pub mod save;
     pub mod triangle;
     pub mod vertice;
@@ -29,23 +30,20 @@ fn generate_lnas(cfg: &Configs) {
         .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
 
     let orig_triangles = get_normalized_triangles(&cfg);
+
     let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&orig_triangles);
     let lagrangian_triangles =
         lagrangian::triangle::generate_lagrangian_triangles(&lagrangian_vertices, &orig_triangles);
 
     let (joined_vertices, joined_triangles) =
-        lagrangian::format::join_information(&lagrangian_vertices, &lagrangian_triangles);
+        lagrangian::join::join_information(&lagrangian_vertices, &lagrangian_triangles);
+    let lnas_obj = lagrangian::format::get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles);
 
     let folder_path = path::Path::new(&cfg.output.folder);
 
     let lnas_filename = folder_path.join(format!("{}.lnas", cfg.name));
-    lagrangian::save::save_lnas(
-        lnas_filename.as_path(),
-        &cfg,
-        &joined_vertices,
-        &joined_triangles,
-    )
-    .unwrap_or_else(|e| panic!("Saving lnas error. Error: {}", e));
+    lagrangian::save::save_lnas(lnas_filename.as_path(), &lnas_obj)
+        .unwrap_or_else(|e| panic!("Saving lnas error. Error: {}", e));
 }
 
 fn main() {

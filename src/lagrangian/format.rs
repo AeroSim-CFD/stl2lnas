@@ -1,102 +1,114 @@
-use crate::lagrangian::triangle::LagrangianTriangle;
-use crate::lagrangian::vertice::LagrangianVertice;
+use crate::cfg::Configs;
 use crate::utils::{Vec3f, Vec3u};
-use std::collections::HashMap;
+use base64;
 
-fn get_vertices_vector(lagrangian_vertices: &HashMap<LagrangianVertice, usize>) -> Vec<Vec3f> {
-    let mut vec_vertices: Vec<Vec3f> = Vec::with_capacity(lagrangian_vertices.len());
-    for _ in lagrangian_vertices.iter() {
-        vec_vertices.push(Vec3f {
-            x: 0f32,
-            y: 0f32,
-            z: 0f32,
-        });
-    }
-    for (vert, idx) in lagrangian_vertices.iter() {
-        vec_vertices[idx.clone()] = vert.pos.clone();
-    }
-    return vec_vertices;
+use serde::{Deserialize, Serialize};
+use std::string::String;
+
+#[derive(PartialEq, Serialize, Deserialize)]
+pub struct GeometryLNAS {
+    pub vertices: String,
+    pub triangles: String,
 }
 
-fn get_triangles_vector(
-    lagrangian_vertices: &HashMap<LagrangianVertice, usize>,
-    lagrangian_triangles: &Vec<LagrangianTriangle>,
-) -> Vec<Vec3u> {
-    let mut vec_triangles: Vec<Vec3u> = Vec::with_capacity(lagrangian_triangles.len());
-    for t in lagrangian_triangles.iter() {
-        let idx0 = lagrangian_vertices.get(&t.p0).unwrap().clone();
-        let idx1 = lagrangian_vertices.get(&t.p1).unwrap().clone();
-        let idx2 = lagrangian_vertices.get(&t.p2).unwrap().clone();
-        let vec_u = Vec3u {
-            x: idx0 as u32,
-            y: idx1 as u32,
-            z: idx2 as u32,
-        };
-        vec_triangles.push(vec_u);
-    }
-    return vec_triangles;
+#[derive(PartialEq, Serialize, Deserialize)]
+pub struct LNAS {
+    pub version: String,
+    pub name: String,
+    pub normalization_x: f32,
+    pub geometry: GeometryLNAS,
 }
 
-pub fn join_information(
-    lagrangian_vertices: &HashMap<LagrangianVertice, usize>,
-    lagrangian_triangles: &Vec<LagrangianTriangle>,
-) -> (Vec<Vec3f>, Vec<Vec3u>) {
-    let vec_vertices = get_vertices_vector(lagrangian_vertices);
-    let vec_triangles = get_triangles_vector(lagrangian_vertices, lagrangian_triangles);
+pub fn get_lnas_obj_save(
+    cfg: &Configs,
+    joined_vertices: &Vec<Vec3f>,
+    joined_triangles: &Vec<Vec3u>,
+) -> LNAS {
+    let version: String = String::from("v0.2.0");
 
-    return (vec_vertices, vec_triangles);
+    let vertices_bytes: Vec<u8> = joined_vertices
+        .iter()
+        .flat_map(|v| v.to_le_bytes_as_f32())
+        .collect();
+    let triangles_bytes: Vec<u8> = joined_triangles
+        .iter()
+        .flat_map(|v| v.to_le_bytes_as_u32())
+        .collect();
+
+    let vertices_b64 = base64::encode(vertices_bytes);
+    let triangles_b64 = base64::encode(triangles_bytes);
+
+    let lnas_obj = LNAS {
+        name: cfg.name.clone(),
+        version: version,
+        normalization_x: cfg.conversion.normalization_x,
+        geometry: GeometryLNAS {
+            vertices: vertices_b64,
+            triangles: triangles_b64,
+        },
+    };
+    return lnas_obj;
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cfg::*;
+    use crate::lagrangian::format::get_lnas_obj_save;
+    use crate::lagrangian::join::join_information;
     use crate::lagrangian::triangle::generate_lagrangian_triangles;
     use crate::lagrangian::vertice::generate_lagrangian_vertices;
     use crate::stl::reader::read_stl;
 
-    fn check_vertices_compatibility(
-        lagrangian_vertices: &HashMap<LagrangianVertice, usize>,
-        joined_vertices: &Vec<Vec3f>,
-    ) {
-        assert_eq!(lagrangian_vertices.len(), joined_vertices.len());
-        for (i, vert) in joined_vertices.iter().enumerate() {
-            let lagr_vert = LagrangianVertice::new(vert.clone());
-            let lagr_vert_pos = lagrangian_vertices.get(&lagr_vert).unwrap().clone();
-            assert_eq!(i as usize, lagr_vert_pos)
+    fn get_vecs_from_geometry(geometry: &GeometryLNAS) -> (Vec<Vec3f>, Vec<Vec3u>) {
+        let vertices_bytes = base64::decode(&geometry.vertices).unwrap();
+        let triangles_bytes = base64::decode(&geometry.triangles).unwrap();
+
+        let mut vertices: Vec<Vec3f> = Vec::new();
+        let mut triangles: Vec<Vec3u> = Vec::new();
+
+        // 3 element per vector, 4 bytes per element
+        for i in 0..vertices_bytes.len() / 12 {
+            let idx = i * 12;
+            let vec_bytes: Vec<u8> = (&vertices_bytes[(idx..idx + 12)]).to_vec();
+            let vert = Vec3f::from_bytes_le(&vec_bytes);
+            vertices.push(vert);
         }
+        for i in 0..triangles_bytes.len() / 12 {
+            let idx = i * 12;
+            let vec_bytes: Vec<u8> = (&triangles_bytes[(idx..idx + 12)]).to_vec();
+            let triangle = Vec3u::from_bytes_le(&vec_bytes);
+            triangles.push(triangle);
+        }
+
+        return (vertices, triangles);
     }
 
-    fn check_triangles_compatibility(
-        lagrangian_triangles: &Vec<LagrangianTriangle>,
+    fn check_lnas_geometry(
+        geometry: &GeometryLNAS,
         joined_vertices: &Vec<Vec3f>,
         joined_triangles: &Vec<Vec3u>,
     ) {
-        assert_eq!(joined_triangles.len(), lagrangian_triangles.len());
-        for (i, triangle) in joined_triangles.iter().enumerate() {
-            let lagr_triangle = lagrangian_triangles[i];
+        let (gem_vertices, gem_triangles) = get_vecs_from_geometry(geometry);
 
-            let p0 = lagr_triangle.p0;
-            let p0_idx = triangle.x;
-            let p0_lagr = joined_vertices[p0_idx as usize];
+        assert_eq!(gem_vertices.len(), joined_vertices.len());
+        assert_eq!(gem_triangles.len(), joined_triangles.len());
 
-            if p0.pos != p0_lagr {
-                panic!("P0 is wrong");
+        for (i, vert) in gem_vertices.iter().enumerate() {
+            if *vert != joined_vertices[i] {
+                panic!(
+                    "Vertice at index {} is different ({} != {})",
+                    i, vert, joined_vertices[i]
+                );
             }
+        }
 
-            let p1 = lagr_triangle.p1;
-            let p1_idx = triangle.y;
-            let p1_lagr = joined_vertices[p1_idx as usize];
-
-            if p1.pos != p1_lagr {
-                panic!("P1 is wrong");
-            }
-
-            let p2 = lagr_triangle.p2;
-            let p2_idx = triangle.z;
-            let p2_lagr = joined_vertices[p2_idx as usize];
-
-            if p2.pos != p2_lagr {
-                panic!("P2 is wrong");
+        for (i, triangle) in gem_triangles.iter().enumerate() {
+            if *triangle != joined_triangles[i] {
+                panic!(
+                    "Vertice at index {} is different ({} != {})",
+                    i, triangle, joined_triangles[i]
+                );
             }
         }
     }
@@ -104,24 +116,30 @@ mod tests {
     #[test]
     fn check_join_info_stl_cube() {
         let filename = String::from("examples/stl/cube.stl");
+        let filename_cfg = String::from("examples/convert_cube.yaml");
+        let cfg = Configs::new(&filename_cfg).unwrap();
+
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);
-        let (joined_vert, joined_tri) = join_information(&lagr_vertices, &lagr_triangles);
+        let (joined_vertices, joined_triangles) = join_information(&lagr_vertices, &lagr_triangles);
+        let lnas_obj = get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles);
 
-        check_vertices_compatibility(&lagr_vertices, &joined_vert);
-        check_triangles_compatibility(&lagr_triangles, &joined_vert, &joined_tri);
+        check_lnas_geometry(&lnas_obj.geometry, &joined_vertices, &joined_triangles);
     }
 
     #[test]
     fn check_join_infocar_stl_terrain() {
         let filename = String::from("examples/stl/terrain.stl");
+        let filename_cfg = String::from("examples/convert_terrain.yaml");
+        let cfg = Configs::new(&filename_cfg).unwrap();
+
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);
-        let (joined_vert, joined_tri) = join_information(&lagr_vertices, &lagr_triangles);
+        let (joined_vertices, joined_triangles) = join_information(&lagr_vertices, &lagr_triangles);
+        let lnas_obj = get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles);
 
-        check_vertices_compatibility(&lagr_vertices, &joined_vert);
-        check_triangles_compatibility(&lagr_triangles, &joined_vert, &joined_tri);
+        check_lnas_geometry(&lnas_obj.geometry, &joined_vertices, &joined_triangles);
     }
 }

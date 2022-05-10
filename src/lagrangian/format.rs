@@ -24,7 +24,7 @@ pub fn get_lnas_obj_save(
     joined_vertices: &Vec<Vec3f>,
     joined_triangles: &Vec<Vec3u>,
 ) -> LNAS {
-    let version: String = String::from("v0.2.0");
+    let version: String = String::from("v0.2.1");
 
     let vertices_bytes: Vec<u8> = joined_vertices
         .iter()

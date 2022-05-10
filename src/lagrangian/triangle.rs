@@ -1,15 +1,37 @@
 use crate::lagrangian::vertice::LagrangianVertice;
 use crate::stl::triangle::TriangleSTL;
+use crate::utils::Vec3f;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fmt;
 
-/// Lagranngian node is defined by a position, with normal and area properties
-#[derive(Serialize, Clone, Copy)]
+#[derive(Serialize, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct LagrangianTriangle {
     pub p0: LagrangianVertice,
     pub p1: LagrangianVertice,
     pub p2: LagrangianVertice,
+}
+
+fn get_normal_order(p0: Vec3f, p1: Vec3f, p2: Vec3f, normal: &Vec3f) -> (Vec3f, Vec3f, Vec3f) {
+    for (pp0, pp1, pp2) in [(p0, p1, p2), (p0, p2, p1)] {
+        // Same convention as OpenGL
+        // https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
+        // U = p1 - p0; V = p2 - p0
+        let u = pp1 - pp0;
+        let v = pp2 - pp0;
+        let mut order_normal = u.cross(v);
+        order_normal.normalize();
+
+        // If same direction, dot product is equal
+        if order_normal.dot(*normal) > 0f32 {
+            return (pp0, pp1, pp2);
+        }
+    }
+
+    panic!(
+        "Normal invalid for triangle [{}, {}, {}] normal {}",
+        p0, p1, p2, normal
+    );
 }
 
 impl LagrangianTriangle {
@@ -17,9 +39,14 @@ impl LagrangianTriangle {
         p0: LagrangianVertice,
         p1: LagrangianVertice,
         p2: LagrangianVertice,
+        normal: &Vec3f,
     ) -> LagrangianTriangle {
-        // TODO: check for normal when creating
-        return LagrangianTriangle { p0, p1, p2 };
+        let (pn0, pn1, pn2) = get_normal_order(p0.pos, p1.pos, p2.pos, normal);
+        return LagrangianTriangle {
+            p0: LagrangianVertice::new(pn0),
+            p1: LagrangianVertice::new(pn1),
+            p2: LagrangianVertice::new(pn2),
+        };
     }
 
     pub fn get_indexes(&self, triangles: &HashMap<LagrangianVertice, usize>) -> Vec<usize> {
@@ -52,7 +79,7 @@ pub fn generate_lagrangian_triangles(
         let lagr_p0 = LagrangianVertice::new(t.point0.clone());
         let lagr_p1 = LagrangianVertice::new(t.point1.clone());
         let lagr_p2 = LagrangianVertice::new(t.point2.clone());
-        let lagr_tri = LagrangianTriangle::new(lagr_p0, lagr_p1, lagr_p2);
+        let lagr_tri = LagrangianTriangle::new(lagr_p0, lagr_p1, lagr_p2, &t.normal);
         lagrangian_triangles.push(lagr_tri);
     }
     return lagrangian_triangles;
@@ -63,6 +90,50 @@ mod tests {
     use super::*;
     use crate::lagrangian::vertice::generate_lagrangian_vertices;
     use crate::stl::reader::read_stl;
+
+    #[test]
+    fn check_normal_decision() {
+        let p0 = Vec3f {
+            x: 0f32,
+            y: 0f32,
+            z: 0f32,
+        };
+        let p1 = Vec3f {
+            x: 1f32,
+            y: 0f32,
+            z: 0f32,
+        };
+        let p2 = Vec3f {
+            x: 0f32,
+            y: 1f32,
+            z: 0f32,
+        };
+        let normal_pos = Vec3f {
+            x: 0f32,
+            y: 0f32,
+            z: 1f32,
+        };
+        let normal_neg = Vec3f {
+            x: 0f32,
+            y: 0f32,
+            z: -1f32,
+        };
+        let normal_pos_wrong = Vec3f {
+            x: 0f32,
+            y: 0f32,
+            z: 0.5f32,
+        };
+
+        let res = get_normal_order(p0, p1, p2, &normal_pos);
+        assert_eq!(res, (p0, p1, p2));
+
+        let res = get_normal_order(p0, p1, p2, &normal_neg);
+        assert_eq!(res, (p0, p2, p1));
+
+        // Does not panic, gets normal in direction that dot product is positive
+        let res = get_normal_order(p0, p1, p2, &normal_pos_wrong);
+        assert_eq!(res, (p0, p1, p2));
+    }
 
     #[test]
     fn check_triangles_stl_cube() {

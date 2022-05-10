@@ -60,9 +60,11 @@ geometry:
   # Triangles are represented as a list [(v01, v02, v03), (v11, v12, v13), ..., (vn1, vn2, vn3)] in u32
   # Where each value in the triple is the point index in the `vertices` list.
   triangles: "base64"
-  # Normal may be recovered using "right hand" rule. 
+  
+  # Normal may be recovered using "right hand" rule, same convention as OpenGL.
   # That is, it considers rotation in sequence p1->p2->p3, so normal is
   # U = p2 - p1; V = p3 - p1 then the normal N = U X V
+  # https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
 ```
 
 ### Compactation impact

@@ -1,6 +1,5 @@
 use crate::lagrangian::vertice::LagrangianVertice;
 use crate::stl::triangle::TriangleSTL;
-use crate::utils;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fmt;
@@ -45,7 +44,7 @@ impl fmt::Display for LagrangianTriangle {
 
 /// Convert STL triangles to lagranagian nodes
 pub fn generate_lagrangian_triangles(
-    vertices: &HashMap<LagrangianVertice, usize>,
+    _vertices: &HashMap<LagrangianVertice, usize>,
     triangles: &Vec<TriangleSTL>,
 ) -> Vec<LagrangianTriangle> {
     let mut lagrangian_triangles: Vec<LagrangianTriangle> = Vec::new();

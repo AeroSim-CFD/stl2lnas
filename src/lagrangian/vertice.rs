@@ -39,8 +39,8 @@ pub fn generate_lagrangian_vertices(
             hash_vertices.insert(p);
         }
     }
-    let mut ordered_vertices: Vec<&Vec3f> = hash_vertices.into_iter().collect();
-    ordered_vertices.sort();
+    let ordered_vertices: Vec<&Vec3f> = hash_vertices.into_iter().collect();
+    // ordered_vertices.sort();
 
     let mut lagrangian_vertices: HashMap<LagrangianVertice, usize> = HashMap::new();
     for (i, p) in ordered_vertices.into_iter().enumerate() {

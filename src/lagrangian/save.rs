@@ -3,11 +3,7 @@ use crate::utils::create_folder_for_filename;
 use crate::utils::{Vec3f, Vec3u};
 use base64;
 use std::error::Error;
-use std::{
-    fs,
-    io::{self, Write},
-    path,
-};
+use std::{fs, path};
 
 use serde::{Deserialize, Serialize};
 use serde_yaml;

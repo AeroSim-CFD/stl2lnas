@@ -65,6 +65,7 @@ fn main() {
     let filename_cfg = matches.value_of("cfg").unwrap();
 
     let cfg = cfg::Configs::new(filename_cfg).unwrap();
+    cfg.save_to_output_folder().unwrap();
 
     generate_lnas(&cfg);
     println!("Generated!");

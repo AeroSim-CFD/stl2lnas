@@ -26,6 +26,8 @@ Some STL and configuration examples are provided in the `examples` folder.
 The example below describes what each field does
  
 ```yaml
+# Object name to set
+name: cube
 stl:
   # STL to convert
   filename: "examples/stl/cube.stl"
@@ -34,9 +36,8 @@ output:
   folder: "output/cube"
 conversion:
   # Normalization size in x to use
-  normalization_x: 2
+  normalization_x: 10.0
 ```
-
 
 ## Lagrangian Nassu format (.lnas)
 
@@ -48,8 +49,8 @@ The format is used to define nodes (points) that are used by IBM (Immersed Bound
 The format definition is:
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
-# v0.2.0 is not compatible with v0.1.0, but it is with v0.2.0)
-version: "v0.2.0"
+# v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0)
+version: "v0.2.1"
 # Name to use for export
 name: "cube"
 # Size to use in x for normalization

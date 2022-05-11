@@ -4,4 +4,4 @@ output:
   folder: "output/cube"
 name: cube
 conversion:
-  normalization_x: 3.5
+  normalization_x: 10.0

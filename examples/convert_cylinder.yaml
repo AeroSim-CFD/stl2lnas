@@ -1,0 +1,7 @@
+stl:
+  filename: "examples/stl/cylinder.stl"
+output:
+  folder: "output/cylinder"
+name: cylinder
+conversion:
+  normalization_x: 12.0

@@ -1,0 +1,7 @@
+stl:
+  filename: "examples/stl/sphere.stl"
+output:
+  folder: "output/sphere"
+name: sphere
+conversion:
+  normalization_x: 10.0

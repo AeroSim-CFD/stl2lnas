@@ -1,0 +1,7 @@
+stl:
+  filename: "examples/stl/plane.stl"
+output:
+  folder: "output/plane"
+name: plane
+conversion:
+  normalization_x: 10.0

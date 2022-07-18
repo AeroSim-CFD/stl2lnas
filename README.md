@@ -32,7 +32,7 @@ stl:
   # STL to convert
   filename: "examples/stl/cube.stl"
 output:
-  # Where to save output files
+  # Folder to save output files
   folder: "output/cube"
 conversion:
   # Normalization size in x to use
@@ -49,7 +49,7 @@ The format is used to define nodes (points) that are used by IBM (Immersed Bound
 The format definition is:
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
-# v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0)
+# v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0
 version: "v0.2.1"
 # Name to use for export
 name: "cube"
@@ -77,23 +77,24 @@ It also uses the points order in the triangle to store the triangle's normal inf
 
 The relative size from STL to LNAS may be calculated by:
 
-$V_{LNAS} = T_{STL}/S$
+$V_{LNAS} = 3 T_{STL}/S$
 
-$T_{LNAS} = 0.5T_{STL}/3$
+$T_{LNAS} = 0.5 T_{STL}/3$
 
 Where $V_{LNAS}$ is the number of unique vertices, $T_{LNAS}$ the number of indexes to represent triangles, $T_{STL}$ the number of triangles and $S$ the average number of triangles that a vertice shares.
 
 The impact of not saving normal is showed as the 0.5 in $T_{LNAS}$ and saving the points as index is the /3 in the same variable.
+While storing only once shared vertices lowers the $V_{LNAS}$ by the $S$ factor.
 
 The total size to represent STL is $3 \cdot 4T_{STL}$ (3 vertices and one normal for each triangle, with 3 dimensions each).
 
 The size to represent STL in LNAS format is $3V_{LNAS}+3T_{LNAS}$.
 
 For example, for a STL that has 100.000 triangles, where each vertex is shared in average among 4 triangles.
-There are $120000/4=30000$ unique vertices and $0.5 \cdot 130000/3 = 20000$.
+There are $3*120.000/4=90.000$ unique vertices and $0.5 \cdot 130.000/3 = 20.000$.
 
-So $3V_{LNAS}+3T_{LNAS}=90000+60000=150000$ and $12 \cdot 100000=1200000$. 
-The relative size of LNAS format is $150000/1200000=12.5%$ in this case.
+So $3V_{LNAS}+3T_{LNAS}=270.000+60.000=330.000$ and $12 \cdot 100.000=120.0000$. 
+The relative size of LNAS format is $330.000/1.200.000=27.5%$ in this case.
 
 
 ## Limitations

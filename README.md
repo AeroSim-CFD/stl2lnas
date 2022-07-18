@@ -5,9 +5,15 @@ Convert .stl files to Lagrangian Nassu (.lnas) format.
 This is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu),
 an LBM based CFD solver.
 
+## Dependencies
+
+`stl2lnas` is written on Rust. So in order to use it, you need to [install the Rust-Lang tools](https://www.rust-lang.org/tools/install).
+After that, you may convert your STL files.
+
+
 ## Usage
 
-To use the program, you may run
+To run the program, use
 
 ```bash
 # --release: "makes the program faster"

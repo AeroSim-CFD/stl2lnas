@@ -1,5 +1,13 @@
 # RELEASE NOTES
 
+
+## v0.3.0
+
+- Added normalization direction as options
+- Changed fields of .lnas format and conversion file
+
+------------------------------------------------------------------------------
+
 ## v0.2.1
 
 - Corrected bug in normal direction, now doing orientation check

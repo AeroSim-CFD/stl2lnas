@@ -60,14 +60,14 @@ fn get_factor_offset(
     size: f32,
     direction: &str,
 ) -> (f32, utils::Vec3f) {
-    let mut mul_factor: f32 = 0f32;
+    let mul_factor: f32;
 
     // normalize between 0 and total_dist in given direction
-    if (direction == "x") {
+    if direction == "x" {
         mul_factor = size / (max_vals.x - min_vals.x);
-    } else if (direction == "y") {
+    } else if direction == "y" {
         mul_factor = size / (max_vals.y - min_vals.y);
-    } else if (direction == "z") {
+    } else if direction == "z" {
         mul_factor = size / (max_vals.z - min_vals.z);
     } else {
         panic!("Invalid direction {}", direction)

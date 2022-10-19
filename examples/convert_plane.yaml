@@ -3,5 +3,6 @@ stl:
 output:
   folder: "output/plane"
 name: plane
-conversion:
-  normalization_x: 10.0
+normalization: 
+  size: 10.0
+  direction: x

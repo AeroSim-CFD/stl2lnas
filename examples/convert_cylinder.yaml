@@ -3,5 +3,6 @@ stl:
 output:
   folder: "output/cylinder"
 name: cylinder
-conversion:
-  normalization_x: 12.0
+normalization: 
+  size: 12.0
+  direction: x

@@ -3,5 +3,6 @@ stl:
   filename: "examples/stl/terrain.stl"
 output:
   folder: "output/terrain"
-conversion:
-  normalization_x: 100.0
+normalization: 
+  size: 100.0
+  direction: x

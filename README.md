@@ -40,9 +40,11 @@ stl:
 output:
   # Folder to save output files
   folder: "output/cube"
-conversion:
-  # Normalization size in x to use
-  normalization_x: 10.0
+normalization:
+  # Size to use for normalization
+  size: 16.0
+  # Reference direction for normalization
+  direction: x
 ```
 
 ## Lagrangian Nassu format (.lnas)
@@ -59,14 +61,17 @@ The format definition is:
 version: "v0.2.1"
 # Name to use for export
 name: "cube"
-# Size to use in x for normalization
-normalization_x: 16.0
+normalization: 
+  # Size to use for normalization
+  size: 16.0
+  # Reference direction for normalization
+  direction: x
 geometry:
   # Vertices are represented as a list [(x0, y0, z0), (x1, y1, z1), ..., (xk, yk, zk)] in f32
-  vertices: "base64"
+  vertices: <base64>
   # Triangles are represented as a list [(v01, v02, v03), (v11, v12, v13), ..., (vn1, vn2, vn3)] in u32
   # Where each value in the triple is the point index in the `vertices` list.
-  triangles: "base64"
+  triangles: <base64>
   
   # Normal may be recovered using "right hand" rule, same convention as OpenGL.
   # That is, it considers rotation in sequence p1->p2->p3, so normal is

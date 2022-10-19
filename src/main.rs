@@ -20,8 +20,11 @@ use stl::triangle::TriangleSTL;
 
 fn get_normalized_triangles(cfg: &Configs) -> Vec<TriangleSTL> {
     let triangles = stl::reader::read_stl(cfg.stl.filename.as_str());
-    let triangles =
-        stl::triangle::normalize_triangles(&triangles, cfg.conversion.normalization_x as f32);
+    let triangles = stl::triangle::normalize_triangles(
+        &triangles,
+        cfg.normalization.size as f32,
+        &cfg.normalization.direction,
+    );
     return triangles;
 }
 

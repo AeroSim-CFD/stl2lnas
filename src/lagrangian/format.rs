@@ -12,10 +12,16 @@ pub struct GeometryLNAS {
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
+pub struct NormalizationLNAS {
+    pub size: f32,
+    pub direction: String,
+}
+
+#[derive(PartialEq, Serialize, Deserialize)]
 pub struct LNAS {
     pub version: String,
     pub name: String,
-    pub normalization_x: f32,
+    pub normalization: NormalizationLNAS,
     pub geometry: GeometryLNAS,
 }
 
@@ -41,7 +47,10 @@ pub fn get_lnas_obj_save(
     let lnas_obj = LNAS {
         name: cfg.name.clone(),
         version: version,
-        normalization_x: cfg.conversion.normalization_x,
+        normalization: NormalizationLNAS {
+            size: cfg.normalization.size,
+            direction: cfg.normalization.direction.to_string(),
+        },
         geometry: GeometryLNAS {
             vertices: vertices_b64,
             triangles: triangles_b64,

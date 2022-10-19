@@ -57,11 +57,22 @@ impl fmt::Display for TriangleSTL {
 fn get_factor_offset(
     min_vals: utils::Vec3f,
     max_vals: utils::Vec3f,
-    total_dist_x: f32,
+    size: f32,
+    direction: &str,
 ) -> (f32, utils::Vec3f) {
-    // Params are: the minimal value, and the difference between min_max for x
-    // These can be used to normalize points
-    let mul_factor = total_dist_x / (max_vals.x - min_vals.x); // normalize between 0 and total_dist
+    let mut mul_factor: f32 = 0f32;
+
+    // normalize between 0 and total_dist in given direction
+    if (direction == "x") {
+        mul_factor = size / (max_vals.x - min_vals.x);
+    } else if (direction == "y") {
+        mul_factor = size / (max_vals.y - min_vals.y);
+    } else if (direction == "z") {
+        mul_factor = size / (max_vals.z - min_vals.z);
+    } else {
+        panic!("Invalid direction {}", direction)
+    }
+
     let offset = utils::Vec3f {
         x: min_vals.x,
         y: min_vals.y,
@@ -103,9 +114,13 @@ fn get_triangles_min_max(triangles: &Vec<TriangleSTL>) -> (utils::Vec3f, utils::
     return (min_vals, max_vals);
 }
 
-pub fn normalize_triangles(triangles: &Vec<TriangleSTL>, total_dist_x: f32) -> Vec<TriangleSTL> {
+pub fn normalize_triangles(
+    triangles: &Vec<TriangleSTL>,
+    size: f32,
+    direction: &str,
+) -> Vec<TriangleSTL> {
     let (min_vals, max_vals) = get_triangles_min_max(&triangles);
-    let (mul_factor, offset) = get_factor_offset(min_vals, max_vals, total_dist_x);
+    let (mul_factor, offset) = get_factor_offset(min_vals, max_vals, size, direction);
     let mut normalized_triangles: Vec<TriangleSTL> = Vec::new();
     for t in triangles.iter() {
         let mut normalized_t = Clone::clone(t);
@@ -124,12 +139,12 @@ mod tests {
     fn check_normalization(
         orig_triangles: Vec<TriangleSTL>,
         norm_triangles: Vec<TriangleSTL>,
-        norm_dist: f32,
+        size: f32,
     ) {
         for t in norm_triangles.iter() {
             for p in [&t.point0, &t.point1, &t.point2] {
-                if p.x < 0f32 || p.x > norm_dist {
-                    panic!("Point {} x is not between 0 and {}", p, norm_dist);
+                if p.x < 0f32 || p.x > size {
+                    panic!("Point {} x is not between 0 and {}", p, size);
                 }
             }
         }
@@ -146,8 +161,8 @@ mod tests {
             .min_by(|x, y| x.partial_cmp(y).unwrap())
             .unwrap();
 
-        if !almost_equal(max_x, norm_dist) {
-            panic!("Max is not same as {}", norm_dist);
+        if !almost_equal(max_x, size) {
+            panic!("Max is not same as {}", size);
         }
         if !almost_equal(min_x, 0f32) {
             panic!("Min is not same as 0");
@@ -157,18 +172,18 @@ mod tests {
     #[test]
     fn normalizes_stl_cube() {
         let filename = String::from("examples/stl/cube.stl");
-        let norm_dist: f32 = 3.5;
+        let size: f32 = 3.5;
         let triangles = read_stl(&filename);
-        let norm_triangles = normalize_triangles(&triangles, norm_dist);
-        check_normalization(triangles, norm_triangles, norm_dist);
+        let norm_triangles = normalize_triangles(&triangles, size, "y");
+        check_normalization(triangles, norm_triangles, size);
     }
 
     #[test]
     fn normalizes_stl_terrain() {
         let filename = String::from("examples/stl/terrain.stl");
-        let norm_dist: f32 = 15.0;
+        let size: f32 = 15.0;
         let triangles = read_stl(&filename);
-        let norm_triangles = normalize_triangles(&triangles, norm_dist);
-        check_normalization(triangles, norm_triangles, norm_dist);
+        let norm_triangles = normalize_triangles(&triangles, size, "x");
+        check_normalization(triangles, norm_triangles, size);
     }
 }

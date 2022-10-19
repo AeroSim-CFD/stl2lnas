@@ -15,21 +15,26 @@ pub struct ConfigsOutput {
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
-pub struct ConfigsConversion {
-    pub normalization_x: f32,
+pub struct ConfigsNormalization {
+    pub size: f32,
+    pub direction: String,
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct Configs {
     pub stl: ConfigsSTL,
     pub name: String,
-    pub conversion: ConfigsConversion,
+    pub normalization: ConfigsNormalization,
     pub output: ConfigsOutput,
 }
 
 impl Configs {
     pub fn new(filename: &str) -> Result<Configs, Box<dyn Error>> {
         let f: Configs = serde_yaml::from_reader(fs::File::open(filename)?)?;
+
+        if !["x", "y", "z"].contains(&f.normalization.direction.as_str()) {
+            panic!("normalization direction must be 'x', 'y' or 'z'");
+        }
         return Ok(f);
     }
 

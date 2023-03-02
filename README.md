@@ -88,6 +88,7 @@ surfaces:
   # Surface name as key in dictionary
   surface1:
     # Index of triangles in given surface, referencing the triangles in `geometry.triangles`
+    # It's represented as [t_idx1, t_idx2, t_idx3, ...] in u32
     triangles_idxs: <base64>
   # Other surfaces...
   surface2:

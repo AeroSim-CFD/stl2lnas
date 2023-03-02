@@ -1,5 +1,12 @@
 # RELEASE NOTES
 
+## v0.4.0
+
+- Added support to generate .lnas from multiple STLs
+- Added surfaces in .lnas format
+  - Each STL used becomes a surface in the output file
+
+------------------------------------------------------------------------------
 
 ## v0.3.0
 
@@ -13,6 +20,7 @@
 - Corrected bug in normal direction, now doing orientation check
 
 ------------------------------------------------------------------------------
+
 ## v0.2.0
 
 - Updated documentation
@@ -20,6 +28,7 @@
 - Transfered most division responsabilities to reader
 
 Code:
+
 - Added tests to modules
 - Refactored file organization
 

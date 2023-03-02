@@ -1,6 +1,7 @@
 name: terrain
 stl:
-  filename: "examples/stl/terrain.stl"
+  files:
+    terrain: "examples/stl/terrain.stl"
 output:
   folder: "output/terrain"
 normalization: 

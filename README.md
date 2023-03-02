@@ -10,7 +10,6 @@ an LBM based CFD solver.
 `stl2lnas` is written on Rust. So in order to use it, you need to [install the Rust-Lang tools](https://www.rust-lang.org/tools/install).
 After that, you may convert your STL files.
 
-
 ## Usage
 
 To run the program, use
@@ -24,22 +23,25 @@ cargo run --release -- --cfg examples/convert_cube.yaml
 
 You can substitute `examples/convert_cube.yaml` with your configuration file.
 
-
 ## Configuration files
 
 Some STL and configuration examples are provided in the `examples` folder.
 
 The example below describes what each field does
- 
+
 ```yaml
 # Object name to set
-name: cube
+name: cube_plane
 stl:
-  # STL to convert
-  filename: "examples/stl/cube.stl"
+  # STLs to use to convert
+  files:
+    # Surface name and STL filename to use to convert it
+    cube: "examples/stl/cube.stl"
+    # When using more than one STL, they're merged together before converting or processing
+    plane: "examples/stl/plane.stl"
 output:
   # Folder to save output files
-  folder: "output/cube"
+  folder: "output/cube_plane"
 normalization:
   # Size to use for normalization
   size: 16.0
@@ -55,6 +57,7 @@ It follows similar compact strategy as [Wavefront obj format](https://en.wikiped
 The format is used to define nodes (points) that are used by IBM (Immersed Boundary Method) to represent a body and its physics.
 
 The format definition is:
+
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
 # v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0
@@ -72,11 +75,23 @@ geometry:
   # Triangles are represented as a list [(v01, v02, v03), (v11, v12, v13), ..., (vn1, vn2, vn3)] in u32
   # Where each value in the triple is the point index in the `vertices` list.
   triangles: <base64>
-  
   # Normal may be recovered using "right hand" rule, same convention as OpenGL.
   # That is, it considers rotation in sequence p1->p2->p3, so normal is
   # U = p2 - p1; V = p3 - p1 then the normal N = U X V
   # https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
+
+# Surfaces are patches of triangles that describe a given set of triangles.
+# It's used in post processing cases, when a geometry may be divided in multiple surfaces for
+# post processing.
+# The keys are the ones specified in the `stl.files` field of the configuration
+surfaces:
+  # Surface name as key in dictionary
+  surface1:
+    # Index of triangles in given surface, referencing the triangles in `geometry.triangles`
+    triangles_idxs: <base64>
+  # Other surfaces...
+  surface2:
+    triangles_idxs: <base64>
 ```
 
 ### Compactation impact
@@ -106,7 +121,6 @@ There are $3*120.000/4=90.000$ unique vertices and $0.5 \cdot 130.000/3 = 20.000
 
 So $3V_{LNAS}+3T_{LNAS}=270.000+60.000=330.000$ and $12 \cdot 100.000=120.0000$. 
 The relative size of LNAS format is $330.000/1.200.000=27.5%$ in this case.
-
 
 ## Limitations
 

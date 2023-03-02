@@ -1,5 +1,6 @@
 stl:
-  filename: "examples/stl/sphere.stl"
+  files:
+    sphere: "examples/stl/sphere.stl"
 output:
   folder: "output/sphere"
 name: sphere

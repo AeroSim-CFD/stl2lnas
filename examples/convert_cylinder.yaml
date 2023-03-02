@@ -1,5 +1,6 @@
 stl:
-  filename: "examples/stl/cylinder.stl"
+  files:
+    cylinder: "examples/stl/cylinder.stl"
 output:
   folder: "output/cylinder"
 name: cylinder

@@ -61,7 +61,7 @@ The format definition is:
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
 # v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0
-version: "v0.3.0"
+version: "v0.4.0"
 # Name to use for export
 name: "cube"
 normalization: 

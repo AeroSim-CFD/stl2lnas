@@ -5,6 +5,7 @@
 - Added support to generate .lnas from multiple STLs
 - Added surfaces in .lnas format
   - Each STL used becomes a surface in the output file
+- Set normalization as an optional parameter for configuration
 
 ------------------------------------------------------------------------------
 

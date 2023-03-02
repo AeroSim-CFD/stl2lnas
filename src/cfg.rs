@@ -2,11 +2,11 @@ use crate::utils::create_folder_for_filename;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::error::Error;
-use std::{fs, path, string::String};
+use std::{collections::HashMap, fs, path, string::String};
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ConfigsSTL {
-    pub filename: String,
+    pub files: HashMap<String, String>,
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
@@ -39,11 +39,10 @@ impl Configs {
     }
 
     fn save_stl_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
-        let filename = path::Path::new(self.output.folder.as_str());
-        fs::copy(
-            &self.stl.filename,
-            filename.join(format!("{}.stl", self.name)),
-        )?;
+        let foldername = path::Path::new(self.output.folder.as_str());
+        for (_stl_name, stl_filename) in self.stl.files.iter() {
+            fs::copy(stl_filename, foldername.join(format!("{}.stl", self.name)))?;
+        }
         return Ok(());
     }
 
@@ -56,5 +55,25 @@ impl Configs {
 
         self.save_stl_to_output_folder()?;
         return Ok(());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn read_filename(filename: &str) {
+        let filename_cfg = filename.to_string();
+        let _cfg = Configs::new(&filename_cfg).unwrap();
+    }
+
+    #[test]
+    fn check_examples_files() {
+        read_filename("examples/convert_cube.yaml");
+        read_filename("examples/convert_cylinder.yaml");
+        read_filename("examples/convert_plane.yaml");
+        read_filename("examples/convert_sphere.yaml");
+        read_filename("examples/convert_terrain.yaml");
+        read_filename("examples/convert_cube_plane.yaml");
     }
 }

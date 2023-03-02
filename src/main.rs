@@ -8,6 +8,7 @@ pub mod lagrangian {
 
 pub mod stl {
     pub mod reader;
+    pub mod surfaces;
     pub mod triangle;
 }
 pub mod cfg;
@@ -16,23 +17,24 @@ pub mod utils;
 use cfg::Configs;
 use clap::{App, Arg};
 use std::path;
+use stl::surfaces::get_surfaces;
 use stl::triangle::TriangleSTL;
 
-fn get_normalized_triangles(cfg: &Configs) -> Vec<TriangleSTL> {
-    let triangles = stl::reader::read_stl(cfg.stl.filename.as_str());
-    let triangles = stl::triangle::normalize_triangles(
+fn get_normalized_triangles(cfg: &Configs, triangles: &Vec<TriangleSTL>) -> Vec<TriangleSTL> {
+    let triangles_norm = stl::triangle::normalize_triangles(
         &triangles,
         cfg.normalization.size as f32,
         &cfg.normalization.direction,
     );
-    return triangles;
+    return triangles_norm;
 }
 
 fn generate_lnas(cfg: &Configs) {
     cfg.save_to_output_folder()
         .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
 
-    let orig_triangles = get_normalized_triangles(&cfg);
+    let (triangles, surfaces) = get_surfaces(&cfg.stl.files);
+    let orig_triangles = get_normalized_triangles(&cfg, &triangles);
 
     let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&orig_triangles);
     let lagrangian_triangles =
@@ -40,7 +42,8 @@ fn generate_lnas(cfg: &Configs) {
 
     let (joined_vertices, joined_triangles) =
         lagrangian::join::join_information(&lagrangian_vertices, &lagrangian_triangles);
-    let lnas_obj = lagrangian::format::get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles);
+    let lnas_obj =
+        lagrangian::format::get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles, &surfaces);
 
     let folder_path = path::Path::new(&cfg.output.folder);
 

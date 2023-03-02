@@ -9,6 +9,7 @@ pub mod lagrangian {
 pub mod cfg;
 pub mod stl {
     pub mod reader;
+    pub mod surfaces;
     pub mod triangle;
 }
 pub mod utils;

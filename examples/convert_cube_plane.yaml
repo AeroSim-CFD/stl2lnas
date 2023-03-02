@@ -1,0 +1,10 @@
+stl:
+  files:
+    cube: "examples/stl/cube.stl"
+    terrain: "examples/stl/plane.stl"
+output:
+  folder: "output/cube_plane"
+name: cube_terrain
+normalization: 
+  size: 10.0
+  direction: x

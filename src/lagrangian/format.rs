@@ -21,7 +21,7 @@ pub struct NormalizationLNAS {
 pub struct LNAS {
     pub version: String,
     pub name: String,
-    pub normalization: NormalizationLNAS,
+    pub normalization: Option<NormalizationLNAS>,
     pub geometry: GeometryLNAS,
     pub surfaces: HashMap<String, String>,
 }
@@ -56,13 +56,18 @@ pub fn get_lnas_obj_save(
         surfaces_save.insert(surface_name.to_owned(), surface_b64);
     }
 
+    let mut normalization: Option<NormalizationLNAS> = Option::None;
+    if cfg.normalization.is_some() {
+        normalization = Some(NormalizationLNAS {
+            size: cfg.normalization.as_ref().unwrap().size,
+            direction: cfg.normalization.as_ref().unwrap().direction.to_string(),
+        });
+    }
+
     let lnas_obj = LNAS {
         name: cfg.name.clone(),
         version: version,
-        normalization: NormalizationLNAS {
-            size: cfg.normalization.size,
-            direction: cfg.normalization.direction.to_string(),
-        },
+        normalization: normalization,
         geometry: GeometryLNAS {
             vertices: vertices_b64,
             triangles: triangles_b64,

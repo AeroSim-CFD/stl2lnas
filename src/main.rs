@@ -21,12 +21,16 @@ use stl::surfaces::get_surfaces;
 use stl::triangle::TriangleSTL;
 
 fn get_normalized_triangles(cfg: &Configs, triangles: &Vec<TriangleSTL>) -> Vec<TriangleSTL> {
-    let triangles_norm = stl::triangle::normalize_triangles(
-        &triangles,
-        cfg.normalization.size as f32,
-        &cfg.normalization.direction,
-    );
-    return triangles_norm;
+    if cfg.normalization.is_some() {
+        let triangles_norm = stl::triangle::normalize_triangles(
+            &triangles,
+            cfg.normalization.as_ref().unwrap().size as f32,
+            &cfg.normalization.as_ref().unwrap().direction,
+        );
+        return triangles_norm;
+    } else {
+        return triangles.to_vec();
+    }
 }
 
 fn generate_lnas(cfg: &Configs) {

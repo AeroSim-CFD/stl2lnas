@@ -14,8 +14,12 @@ pub fn get_surfaces(
     let mut all_triangles: Vec<TriangleSTL> = Vec::new();
     let mut surfaces_triangles: HashMap<String, Vec<u32>> = HashMap::new();
 
-    for (surface_name, stl_filename) in files.iter() {
+    let mut surface_names: Vec<&String> = files.keys().into_iter().collect();
+    surface_names.sort();
+
+    for surface_name in surface_names.into_iter() {
         // STL triangles
+        let stl_filename = files.get(surface_name).unwrap();
         let mut stl_triangles = get_stl_triangles(stl_filename);
         // Index of these STL triangles when comparing to list of triangles
         let triangles_idxs_range = all_triangles.len()..all_triangles.len() + stl_triangles.len();
@@ -28,7 +32,6 @@ pub fn get_surfaces(
         // Inset surface triangles indexes in hash map
         surfaces_triangles.insert(surface_name.to_owned(), triangles_idxs_u32);
     }
-
     return (all_triangles, surfaces_triangles);
 }
 
@@ -62,11 +65,11 @@ mod tests {
         );
 
         let (triangles, surfaces) = get_surfaces(&files);
-        // Cube has 2 triangles each face
         let surface_cube = surfaces.get("cube").unwrap().to_owned();
         let surface_cylinder = surfaces.get("cylinder").unwrap().to_owned();
 
         assert_eq!(triangles.len(), surface_cube.len() + surface_cylinder.len());
+        // Values are sorted by surface name
         assert_eq!(
             surface_cube,
             (0..surface_cube.len())

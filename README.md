@@ -42,6 +42,7 @@ stl:
 output:
   # Folder to save output files
   folder: "output/cube_plane"
+# Normalization may be null as well
 normalization:
   # Size to use for normalization
   size: 16.0
@@ -64,6 +65,7 @@ The format definition is:
 version: "v0.4.0"
 # Name to use for export
 name: "cube"
+# Normalization may be null
 normalization: 
   # Size to use for normalization
   size: 16.0

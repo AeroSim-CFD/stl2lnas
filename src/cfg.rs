@@ -24,7 +24,7 @@ pub struct ConfigsNormalization {
 pub struct Configs {
     pub stl: ConfigsSTL,
     pub name: String,
-    pub normalization: ConfigsNormalization,
+    pub normalization: Option<ConfigsNormalization>,
     pub output: ConfigsOutput,
 }
 
@@ -32,8 +32,10 @@ impl Configs {
     pub fn new(filename: &str) -> Result<Configs, Box<dyn Error>> {
         let f: Configs = serde_yaml::from_reader(fs::File::open(filename)?)?;
 
-        if !["x", "y", "z"].contains(&f.normalization.direction.as_str()) {
-            panic!("normalization direction must be 'x', 'y' or 'z'");
+        if f.normalization.is_some() {
+            if !["x", "y", "z"].contains(&f.normalization.as_ref().unwrap().direction.as_str()) {
+                panic!("normalization direction must be 'x', 'y' or 'z'");
+            }
         }
         return Ok(f);
     }
@@ -75,5 +77,6 @@ mod tests {
         read_filename("examples/convert_sphere.yaml");
         read_filename("examples/convert_terrain.yaml");
         read_filename("examples/convert_cube_plane.yaml");
+        read_filename("examples/convert_cube_no_norm.yaml");
     }
 }

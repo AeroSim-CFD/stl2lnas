@@ -121,7 +121,7 @@ For example, for a STL that has 100.000 triangles, where each vertex is shared i
 There are $3*120.000/4=90.000$ unique vertices and $0.5 \cdot 130.000/3 = 20.000$.
 
 So $3V_{LNAS}+3T_{LNAS}=270.000+60.000=330.000$ and $12 \cdot 100.000=120.0000$.
-**The relative size of LNAS format is $330.000/1.200.000=27.5\%$ in this case**.
+**The relative size of LNAS format is $330.000/1.200.000=27.5$% in this case**.
 
 ## Limitations
 

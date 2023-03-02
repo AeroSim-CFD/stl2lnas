@@ -65,7 +65,7 @@ The format definition is:
 version: "v0.4.0"
 # Name to use for export
 name: "cube"
-# Normalization may be null
+# Normalization may be null, then geometry is generated in original STL positioning and size
 normalization: 
   # Size to use for normalization
   size: 16.0

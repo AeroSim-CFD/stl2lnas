@@ -1,5 +1,6 @@
 [package]
 name = "stl2lnas"
+default-run = "stl2lnas"
 version = "0.4.1"
 edition = "2021"
 

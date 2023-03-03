@@ -62,7 +62,7 @@ The format definition is:
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
 # v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0
-version: "v0.4.0"
+version: "v0.4.1"
 # Name to use for export
 name: "cube"
 # Normalization may be null, then geometry is generated in original STL positioning and size

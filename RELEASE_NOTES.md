@@ -1,5 +1,9 @@
 # RELEASE NOTES
 
+## v0.4.1
+
+- Added bin to convert lnas in folder
+
 ## v0.4.0
 
 - Added support to generate .lnas from multiple STLs

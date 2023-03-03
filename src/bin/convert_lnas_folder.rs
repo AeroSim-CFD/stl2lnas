@@ -1,6 +1,8 @@
 use stl2lnas::cfg::Configs;
+use std::path::PathBuf;
 use clap::{App, Arg};
 use std::path;
+use std::collections::HashMap;
 use stl2lnas::stl::{surfaces::get_surfaces, triangle::TriangleSTL};
 use stl2lnas::stl;
 use stl2lnas::lagrangian;
@@ -19,10 +21,7 @@ fn get_normalized_triangles(cfg: &Configs, triangles: &Vec<TriangleSTL>) -> Vec<
     }
 }
 
-fn generate_lnas(cfg: &Configs, filename_cfg: &String) {
-    cfg.save_to_output_folder()
-        .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
-
+fn generate_lnas(cfg: &Configs) {
     let (triangles, surfaces) = get_surfaces(&cfg.stl.files);
     let orig_triangles = get_normalized_triangles(&cfg, &triangles);
 
@@ -42,6 +41,23 @@ fn generate_lnas(cfg: &Configs, filename_cfg: &String) {
         .unwrap_or_else(|e| panic!("Saving lnas error. Error: {}", e));
 }
 
+fn get_configs(filename_cfg: &str) -> Configs{
+    let mut cfg = cfg::Configs::new(filename_cfg).unwrap();
+    // Update configs
+    let path = PathBuf::from(filename_cfg);
+    let dir = path.parent().unwrap();
+    cfg.output.folder = dir.to_str().unwrap().to_string();
+    let mut new_files: HashMap<String, String> = HashMap::new();
+    for (surface_name, filename) in cfg.stl.files.into_iter(){
+        let path_buff = PathBuf::from(filename);
+        let filename_stl = path_buff.file_name().unwrap();
+        let new_path_stl = dir.join(filename_stl);
+        new_files.insert(surface_name, new_path_stl.to_str().unwrap().to_string());
+    }
+    cfg.stl.files = new_files;
+    return cfg;
+}
+
 fn main() {
     let cli_app = App::new("stl2lnas")
         .author("Waine Oliveira Junior <waine@aerosim.io>")
@@ -57,10 +73,8 @@ fn main() {
 
     let matches = cli_app.get_matches();
     let filename_cfg = matches.value_of("cfg").unwrap();
+    let cfg = get_configs(filename_cfg);
 
-    let cfg = cfg::Configs::new(filename_cfg).unwrap();
-    cfg.save_to_output_folder().unwrap();
-
-    generate_lnas(&cfg, &filename_cfg.to_string());
+    generate_lnas(&cfg);
     println!("Generated!");
 }

@@ -42,8 +42,8 @@ impl Configs {
 
     fn save_stl_to_output_folder(&self) -> Result<(), Box<dyn Error>> {
         let foldername = path::Path::new(self.output.folder.as_str());
-        for (_stl_name, stl_filename) in self.stl.files.iter() {
-            fs::copy(stl_filename, foldername.join(format!("{}.stl", self.name)))?;
+        for (stl_name, stl_filename) in self.stl.files.iter() {
+            fs::copy(stl_filename, foldername.join(format!("{}.stl", stl_name)))?;
         }
         return Ok(());
     }

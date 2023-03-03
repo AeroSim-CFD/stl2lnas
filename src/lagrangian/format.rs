@@ -32,7 +32,7 @@ pub fn get_lnas_obj_save(
     joined_triangles: &Vec<Vec3u>,
     surfaces: &HashMap<String, Vec<u32>>,
 ) -> LNAS {
-    let version: String = String::from("v0.4.0");
+    let version: String = String::from("v0.4.1");
 
     let vertices_bytes: Vec<u8> = joined_vertices
         .iter()

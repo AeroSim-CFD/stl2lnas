@@ -1,5 +1,9 @@
 # RELEASE NOTES
 
+## v0.4.2
+
+- Added check for small triangles to not add then
+
 ## v0.4.1
 
 - Added bin to convert lnas in folder

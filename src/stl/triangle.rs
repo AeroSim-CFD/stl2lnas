@@ -18,6 +18,7 @@ impl TriangleSTL {
         normal: utils::Vec3f,
     ) -> TriangleSTL {
         assert_almost_equal!(&normal.norm(), 1.0, 1e-5f32);
+
         return TriangleSTL {
             point0,
             point1,
@@ -30,6 +31,16 @@ impl TriangleSTL {
         self.point0.transform(factor, offset);
         self.point1.transform(factor, offset);
         self.point2.transform(factor, offset);
+    }
+
+    pub fn check_area_valid(self) -> bool{
+        let u: utils::Vec3f = self.point0 - self.point1;
+        let v: utils::Vec3f = self.point0 - self.point2;
+        let area = u.cross(v).norm() / 2.0;
+        if area < 1e-5 {
+            return false;
+        }
+        return true;
     }
 }
 

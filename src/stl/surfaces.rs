@@ -1,19 +1,20 @@
-use std::{collections::HashMap, string::String};
+use std::{collections::HashMap, path, string::String};
 
 use crate::stl::reader::read_stl;
 use crate::stl::triangle::TriangleSTL;
 
-fn get_stl_triangles(stl_filename: &String) -> Vec<TriangleSTL> {
-    let triangles = read_stl(stl_filename.as_str());
+fn get_stl_triangles(stl_filename: &path::PathBuf) -> Vec<TriangleSTL> {
+    let triangles = read_stl(stl_filename);
     return triangles;
 }
 
 pub fn get_surfaces(
-    files: &HashMap<String, String>,
+    files: &HashMap<String, path::PathBuf>,
 ) -> (Vec<TriangleSTL>, HashMap<String, Vec<u32>>) {
     let mut all_triangles: Vec<TriangleSTL> = Vec::new();
     let mut surfaces_triangles: HashMap<String, Vec<u32>> = HashMap::new();
 
+    // Do this to be deterministic
     let mut surface_names: Vec<&String> = files.keys().into_iter().collect();
     surface_names.sort();
 

@@ -37,7 +37,7 @@ fn generate_lnas(cfg: &Configs) {
     cfg.save_to_output_folder()
         .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
 
-    let (triangles, surfaces) = get_surfaces(&cfg.stl.files);
+    let (triangles, surfaces) = get_surfaces(&cfg.all_stls());
     let orig_triangles = get_normalized_triangles(&cfg, &triangles);
 
     let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&orig_triangles);

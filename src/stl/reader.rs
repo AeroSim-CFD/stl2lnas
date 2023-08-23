@@ -1,13 +1,20 @@
 use crate::stl::triangle::TriangleSTL;
 use crate::utils::{bytes_to_u32_le, Vec3f};
-use std::{convert::TryInto, fs};
+use std::{convert::TryInto, fs, path};
 
 const TRIANGLE_BYTES_SIZE: usize = 50;
 const HEADER_BYTES_SIZE: usize = 80;
 
-fn read_file(filename: &str) -> Vec<u8> {
-    let content = fs::read(filename).expect(format!("Unable to read {}", &filename).as_str());
+fn read_file(filename: &path::PathBuf) -> Vec<u8> {
+    let content = fs::read(filename).expect(format!("Unable to read {:?}", filename).as_str());
     return content;
+}
+
+pub fn read_stl(filename: &path::PathBuf) -> Vec<TriangleSTL> {
+    let stl_content = read_file(filename);
+    let n_triangles = number_of_triangles(&stl_content);
+    let triangles = triangles_from_stl(&stl_content, n_triangles);
+    return triangles;
 }
 
 fn number_of_triangles(stl_content: &Vec<u8>) -> u32 {
@@ -56,13 +63,6 @@ fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<TriangleST
     }
 
     return all_triangles;
-}
-
-pub fn read_stl(filename: &str) -> Vec<TriangleSTL> {
-    let stl_content = read_file(filename);
-    let n_triangles = number_of_triangles(&stl_content);
-    let triangles = triangles_from_stl(&stl_content, n_triangles);
-    return triangles;
 }
 
 #[cfg(test)]

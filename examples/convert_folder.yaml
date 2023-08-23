@@ -1,10 +1,11 @@
 name: terrain
 stl:
-  files: {}
+  files:
+    cylinder: "examples/stl/cylinder.stl"
   folders: 
     - "examples/stl/folder_example"
 output:
-  folder: "output/terrain"
+  folder: "output/folder_example"
 normalization: 
   size: 100.0
   direction: x

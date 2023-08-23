@@ -1,5 +1,9 @@
 # RELEASE NOTES
 
+## v0.4.3
+
+- Added support for loading STL from folder
+
 ## v0.4.2
 
 - Added check for small triangles to not add then

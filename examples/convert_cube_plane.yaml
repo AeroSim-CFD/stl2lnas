@@ -2,6 +2,7 @@ stl:
   files:
     cube: "examples/stl/cube.stl"
     terrain: "examples/stl/plane.stl"
+  folders: []
 output:
   folder: "output/cube_plane"
 name: cube_terrain

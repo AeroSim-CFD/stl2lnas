@@ -2,6 +2,7 @@ name: cube_no_norm
 stl:
   files:
     cube: "examples/stl/cube.stl"
+  folders: []
 output:
   folder: "output/cube_no_norm"
 normalization: null

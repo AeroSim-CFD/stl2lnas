@@ -1,6 +1,7 @@
 stl:
   files:
     cube: "examples/stl/cube.stl"
+  folders: []
 output:
   folder: "output/cube"
 name: cube

@@ -1,6 +1,7 @@
 stl:
   files:
     plane: "examples/stl/plane.stl"
+  folders: []
 output:
   folder: "output/plane"
 name: plane

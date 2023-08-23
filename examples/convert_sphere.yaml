@@ -1,6 +1,7 @@
 stl:
   files:
     sphere: "examples/stl/sphere.stl"
+  folders: []
 output:
   folder: "output/sphere"
 name: sphere

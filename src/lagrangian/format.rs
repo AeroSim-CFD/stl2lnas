@@ -97,13 +97,13 @@ mod tests {
         // 3 element per vector, 4 bytes per element
         for i in 0..vertices_bytes.len() / 12 {
             let idx = i * 12;
-            let vec_bytes: Vec<u8> = (&vertices_bytes[(idx..idx + 12)]).to_vec();
+            let vec_bytes: Vec<u8> = (&vertices_bytes[idx..idx + 12]).to_vec();
             let vert = Vec3f::from_bytes_le(&vec_bytes);
             vertices.push(vert);
         }
         for i in 0..triangles_bytes.len() / 12 {
             let idx = i * 12;
-            let vec_bytes: Vec<u8> = (&triangles_bytes[(idx..idx + 12)]).to_vec();
+            let vec_bytes: Vec<u8> = (&triangles_bytes[idx..idx + 12]).to_vec();
             let triangle = Vec3u::from_bytes_le(&vec_bytes);
             triangles.push(triangle);
         }

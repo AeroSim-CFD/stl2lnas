@@ -39,13 +39,13 @@ impl Configs {
             }
         }
         for (_name, stl_filename) in f.all_stls().iter() {
-            if (!stl_filename.exists() || !stl_filename.is_file()) {
+            if !stl_filename.exists() || !stl_filename.is_file() {
                 panic!(
                     "STL path {:?} doesn't exists or is not a file",
                     stl_filename
                 );
             }
-            if (!stl_filename.to_str().unwrap().ends_with(".stl")) {
+            if !stl_filename.to_str().unwrap().ends_with(".stl") {
                 panic!("STL path {:?} doesn't end with .stl", stl_filename);
             }
         }
@@ -69,15 +69,21 @@ impl Configs {
         for foldername in self.stl.folders.iter() {
             let paths = self.folder_stls(foldername);
             for p in paths.iter() {
-                let name = p.file_name().unwrap().to_str().unwrap();
-                if (stls.contains_key(name)) {
+                let name = p
+                    .file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .strip_suffix(".stl")
+                    .unwrap();
+                if stls.contains_key(name) {
                     panic!("Repeated name {} in folder STLs", name);
                 }
                 stls.insert(name.to_string(), p.to_owned());
             }
         }
         for (name, stl_filename) in self.stl.files.iter() {
-            if (stls.contains_key(name)) {
+            if stls.contains_key(name) {
                 panic!("Repeated name {} in file STLs", name);
             }
             let path = path::Path::new(stl_filename);

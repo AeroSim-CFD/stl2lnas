@@ -1,12 +1,12 @@
-use stl2lnas::cfg::Configs;
-use std::path::PathBuf;
 use clap::{App, Arg};
-use std::path;
 use std::collections::HashMap;
-use stl2lnas::stl::{surfaces::get_surfaces, triangle::TriangleSTL};
-use stl2lnas::stl;
-use stl2lnas::lagrangian;
+use std::path;
+use std::path::PathBuf;
 use stl2lnas::cfg;
+use stl2lnas::cfg::Configs;
+use stl2lnas::lagrangian;
+use stl2lnas::stl;
+use stl2lnas::stl::{surfaces::get_surfaces, triangle::TriangleSTL};
 
 fn get_normalized_triangles(cfg: &Configs, triangles: &Vec<TriangleSTL>) -> Vec<TriangleSTL> {
     if cfg.normalization.is_some() {
@@ -41,14 +41,14 @@ fn generate_lnas(cfg: &Configs) {
         .unwrap_or_else(|e| panic!("Saving lnas error. Error: {}", e));
 }
 
-fn get_configs(filename_cfg: &str) -> Configs{
+fn get_configs(filename_cfg: &str) -> Configs {
     let mut cfg = cfg::Configs::new(filename_cfg).unwrap();
     // Update configs
     let path = PathBuf::from(filename_cfg);
     let dir = path.parent().unwrap();
     cfg.output.folder = dir.to_str().unwrap().to_string();
     let mut new_files: HashMap<String, String> = HashMap::new();
-    for (surface_name, filename) in cfg.stl.files.into_iter(){
+    for (surface_name, filename) in cfg.stl.files.into_iter() {
         let path_buff = PathBuf::from(filename);
         let filename_stl = path_buff.file_name().unwrap();
         let new_path_stl = dir.join(filename_stl);

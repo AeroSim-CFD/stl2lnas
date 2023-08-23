@@ -34,7 +34,7 @@ fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<TriangleST
     // + 4 due to triangle numbers
     let start_byte = HEADER_BYTES_SIZE + 4;
     let mut all_triangles: Vec<TriangleSTL> = Vec::new();
-    let mut n_invalid_triangles =0;
+    let mut n_invalid_triangles = 0;
     for i in 0..n_triangles {
         let curr_byte_idx = start_byte + TRIANGLE_BYTES_SIZE * (i as usize);
         let curr_triangle_bytes: &[u8; TRIANGLE_BYTES_SIZE] = stl_content
@@ -44,12 +44,15 @@ fn triangles_from_stl(stl_content: &Vec<u8>, n_triangles: u32) -> Vec<TriangleST
         let triangle = bytes_to_triangle(curr_triangle_bytes);
         if triangle.check_area_valid() {
             all_triangles.push(triangle);
-        }else{
+        } else {
             n_invalid_triangles += 1;
         }
     }
     if n_invalid_triangles > 0 {
-        println!("Found {} invalid triangles in STL, they were not added to LNAS", n_invalid_triangles);
+        println!(
+            "Found {} invalid triangles in STL, they were not added to LNAS",
+            n_invalid_triangles
+        );
     }
 
     return all_triangles;

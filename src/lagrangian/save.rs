@@ -8,8 +8,8 @@ use serde_yaml;
 pub fn save_lnas(filename: &path::Path, lnas_obj: &LNAS) -> Result<(), Box<dyn Error>> {
     create_folder_for_filename(filename)?;
     let file = fs::File::create(filename)?;
+    println!("Saving...");
     serde_yaml::to_writer(file, &lnas_obj)?;
-    print!("saving");
 
     return Ok(());
 }

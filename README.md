@@ -39,6 +39,12 @@ stl:
     cube: "examples/stl/cube.stl"
     # When using more than one STL, they're merged together before converting or processing
     plane: "examples/stl/plane.stl"
+  # Folders with STLs for conversion
+  folders:
+    # All files in these folder will be used to convertion. The generated surface name will be 
+    # the same of the filename. Two surfaces cannot share the same name
+    - "examples/stl/folder_example"
+    - "examples/stl/another_folder"
 output:
   # Folder to save output files
   folder: "output/cube_plane"

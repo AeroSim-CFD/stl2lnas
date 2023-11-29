@@ -146,6 +146,7 @@ mod tests {
     use super::*;
     use crate::stl::reader::read_stl;
     use crate::utils::almost_equal;
+    use std::{path, string::String};
 
     fn check_normalization(
         orig_triangles: Vec<TriangleSTL>,
@@ -182,7 +183,8 @@ mod tests {
 
     #[test]
     fn normalizes_stl_cube() {
-        let filename = String::from("examples/stl/cube.stl");
+        let str_filename = String::from("examples/stl/cube.stl");
+        let filename = path::Path::new(str_filename.as_str()).to_owned();
         let size: f32 = 3.5;
         let triangles = read_stl(&filename);
         let norm_triangles = normalize_triangles(&triangles, size, "y");
@@ -191,7 +193,8 @@ mod tests {
 
     #[test]
     fn normalizes_stl_terrain() {
-        let filename = String::from("examples/stl/terrain.stl");
+        let str_filename = String::from("examples/stl/terrain.stl");
+        let filename = path::Path::new(str_filename.as_str()).to_owned();
         let size: f32 = 15.0;
         let triangles = read_stl(&filename);
         let norm_triangles = normalize_triangles(&triangles, size, "x");

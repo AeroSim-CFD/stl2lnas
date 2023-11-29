@@ -71,7 +71,8 @@ mod tests {
 
     #[test]
     fn can_read_stl_cube() {
-        let filename = String::from("examples/stl/cube.stl");
+        let str_filename = String::from("examples/stl/cube.stl");
+        let filename = path::Path::new(str_filename.as_str()).to_owned();
         let triangles = read_stl(&filename);
         // Cube has 2 triangles each face
         assert_eq!(triangles.len(), 6 * 2);
@@ -79,7 +80,8 @@ mod tests {
 
     #[test]
     fn can_read_stl_terrain() {
-        let filename = String::from("examples/stl/terrain.stl");
+        let str_filename = String::from("examples/stl/terrain.stl");
+        let filename = path::Path::new(str_filename.as_str()).to_owned();
         read_stl(&filename);
     }
 }

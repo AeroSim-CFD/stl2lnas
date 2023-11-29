@@ -53,6 +53,7 @@ mod tests {
     use crate::lagrangian::triangle::generate_lagrangian_triangles;
     use crate::lagrangian::vertice::generate_lagrangian_vertices;
     use crate::stl::reader::read_stl;
+    use std::path;
 
     fn check_vertices_compatibility(
         lagrangian_vertices: &HashMap<LagrangianVertice, usize>,
@@ -103,7 +104,7 @@ mod tests {
 
     #[test]
     fn check_join_info_stl_cube() {
-        let filename = String::from("examples/stl/cube.stl");
+        let filename = path::Path::new(String::from("examples/stl/cube.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);
@@ -115,7 +116,8 @@ mod tests {
 
     #[test]
     fn check_join_infocar_stl_terrain() {
-        let filename = String::from("examples/stl/terrain.stl");
+        let filename =
+            path::Path::new(String::from("examples/stl/terrain.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);

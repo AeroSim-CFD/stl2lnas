@@ -1,6 +1,6 @@
 [package]
 name = "stl2lnas"
-thors = ["Waine Oliveira Jr <waine@aerosim.io>"]
+authors = ["Waine Oliveira Jr <waine@aerosim.io>"]
 default-run = "stl2lnas"
 version = "0.5.0"
 description = "Convert STL to LNAS files"

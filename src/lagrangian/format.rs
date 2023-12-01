@@ -33,8 +33,8 @@ pub fn get_lnas_obj_save(
         .flat_map(|v| v.to_le_bytes_as_u32())
         .collect();
 
-    let vertices_b64 = general_purpose::STANDARD_NO_PAD.encode(vertices_bytes);
-    let triangles_b64 = general_purpose::STANDARD_NO_PAD.encode(triangles_bytes);
+    let vertices_b64 = general_purpose::STANDARD.encode(vertices_bytes);
+    let triangles_b64 = general_purpose::STANDARD.encode(triangles_bytes);
 
     let mut surfaces_save: HashMap<String, String> = HashMap::new();
     for (surface_name, triangles_idxs) in surfaces.iter() {
@@ -42,7 +42,7 @@ pub fn get_lnas_obj_save(
             .iter()
             .flat_map(|v| v.to_le_bytes())
             .collect();
-        let surface_b64 = general_purpose::STANDARD_NO_PAD.encode(surface_bytes);
+        let surface_b64 = general_purpose::STANDARD.encode(surface_bytes);
         surfaces_save.insert(surface_name.to_owned(), surface_b64);
     }
 
@@ -68,10 +68,10 @@ mod tests {
     use std::path;
 
     fn get_vecs_from_geometry(geometry: &GeometryLNAS) -> (Vec<Vec3f>, Vec<Vec3u>) {
-        let vertices_bytes = general_purpose::STANDARD_NO_PAD
+        let vertices_bytes = general_purpose::STANDARD
             .decode(&geometry.vertices)
             .unwrap();
-        let triangles_bytes = general_purpose::STANDARD_NO_PAD
+        let triangles_bytes = general_purpose::STANDARD
             .decode(&geometry.triangles)
             .unwrap();
 

@@ -1,5 +1,15 @@
 # RELEASE NOTES
 
+## v0.5.0
+
+- Removed support for normalization
+- Removed unused bin script (`convert_lnas_folder`)
+- Updated dependencies (clap, serde and base64)
+- Changed usage for CLI instead of configuration file
+- Updated README
+
+------------------------------------------------------------------------------
+
 ## v0.4.3
 
 - Added support for loading STL from folder

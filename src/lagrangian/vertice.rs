@@ -54,10 +54,11 @@ pub fn generate_lagrangian_vertices(
 mod tests {
     use super::*;
     use crate::stl::reader::read_stl;
+    use std::path;
 
     #[test]
     fn check_vertices_stl_cube() {
-        let filename = String::from("examples/stl/cube.stl");
+        let filename = path::Path::new(String::from("examples/stl/cube.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         // Cube has 2 triangles each face
         assert_eq!(triangles.len(), 6 * 2);
@@ -68,7 +69,8 @@ mod tests {
 
     #[test]
     fn check_vertices_stl_terrain() {
-        let filename = String::from("examples/stl/terrain.stl");
+        let filename =
+            path::Path::new(String::from("examples/stl/terrain.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         if triangles.len() * 3 < lagr_vertices.len() {

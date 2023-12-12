@@ -14,67 +14,52 @@ pub mod stl {
 pub mod cfg;
 pub mod utils;
 
-use cfg::Configs;
-use clap::{App, Arg};
+use cfg::Args;
+use clap::Parser;
 use std::path;
 use stl::surfaces::get_surfaces;
-use stl::triangle::TriangleSTL;
 
-fn get_normalized_triangles(cfg: &Configs, triangles: &Vec<TriangleSTL>) -> Vec<TriangleSTL> {
-    if cfg.normalization.is_some() {
-        let triangles_norm = stl::triangle::normalize_triangles(
-            &triangles,
-            cfg.normalization.as_ref().unwrap().size as f32,
-            &cfg.normalization.as_ref().unwrap().direction,
-        );
-        return triangles_norm;
-    } else {
-        return triangles.to_vec();
-    }
-}
+fn generate_lnas(args: &Args) {
+    args.save_stl_to_output_folder()
+        .unwrap_or_else(|e| println!("Unable to save STL in its output folder. Error: {}", e));
 
-fn generate_lnas(cfg: &Configs) {
-    cfg.save_to_output_folder()
-        .unwrap_or_else(|e| println!("Unable to save configs in its output folder. Error: {}", e));
+    let (triangles, surfaces) = get_surfaces(&args.all_stls());
 
-    let (triangles, surfaces) = get_surfaces(&cfg.all_stls());
-    let orig_triangles = get_normalized_triangles(&cfg, &triangles);
-
-    let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&orig_triangles);
+    let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&triangles);
     let lagrangian_triangles =
-        lagrangian::triangle::generate_lagrangian_triangles(&lagrangian_vertices, &orig_triangles);
+        lagrangian::triangle::generate_lagrangian_triangles(&lagrangian_vertices, &triangles);
 
     let (joined_vertices, joined_triangles) =
         lagrangian::join::join_information(&lagrangian_vertices, &lagrangian_triangles);
     let lnas_obj =
-        lagrangian::format::get_lnas_obj_save(&cfg, &joined_vertices, &joined_triangles, &surfaces);
+        lagrangian::format::get_lnas_obj_save(&joined_vertices, &joined_triangles, &surfaces);
 
-    let folder_path = path::Path::new(&cfg.output.folder);
+    let lnas_filename = path::Path::new(&args.output);
 
-    let lnas_filename = folder_path.join(format!("{}.lnas", cfg.name));
-    lagrangian::save::save_lnas(lnas_filename.as_path(), &lnas_obj)
+    lagrangian::save::save_lnas(lnas_filename, &lnas_obj)
         .unwrap_or_else(|e| panic!("Saving lnas error. Error: {}", e));
 }
 
 fn main() {
-    let cli_app = App::new("stl2lnas")
-        .author("Waine Oliveira Junior <waine@aerosim.io>")
-        .about("Converts STL files to LNAS (Lagrangian Nassu format)")
-        .arg(
-            Arg::with_name("cfg")
-                .short("c")
-                .long("cfg")
-                .value_name("YAML_FILE")
-                .help("Configuration file for conversion")
-                .required(true),
-        );
+    let args = Args::parse();
 
-    let matches = cli_app.get_matches();
-    let filename_cfg = matches.value_of("cfg").unwrap();
+    if args.file.len() == 0 && args.dir.len() == 0 {
+        println!("No file or dir to convert");
+        return;
+    }
 
-    let cfg = cfg::Configs::new(filename_cfg).unwrap();
-    cfg.save_to_output_folder().unwrap();
+    let lnas_filename = path::Path::new(&args.output);
+    if lnas_filename.exists() {
+        if !args.overwrite {
+            panic!(
+                "File '{}' already exists. Add '--overwrite' if you wish to overwrite it",
+                args.output
+            );
+        } else {
+            println!("Overwriting file...");
+        }
+    }
 
-    generate_lnas(&cfg);
+    generate_lnas(&args);
     println!("Generated!");
 }

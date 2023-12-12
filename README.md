@@ -10,50 +10,50 @@ an LBM based CFD solver.
 `stl2lnas` is written on Rust. So in order to use it, you need to [install the Rust-Lang tools](https://www.rust-lang.org/tools/install).
 After that, you may convert your STL files.
 
-## Usage
+## Instalation and usage
 
-To run the program, use
+To run stl2lnas from anywhere on your system, run the commands below
 
 ```bash
-# --release: "makes the program faster"
-# --: finish cargo's arguments
-# --cfg <file>: configuration file to use
-cargo run --release -- --cfg examples/convert_cube.yaml
+# Build release version
+cargo build --release
+# Copy the executable to your system's PATH
+cp target/release/stl2lnas ~/.local/bin/
 ```
 
-You can substitute `examples/convert_cube.yaml` with your configuration file.
+After that, `stl2lnas` is treated as a command in your system. You may run using
 
-## Configuration files
+```bash
+# --dir/-d <folder>: Folders with STL files
+# --file/-f <file>: STL filenames
+# -o: output to save .lnas file
+# --overwrite: Add this if you wish to overwrite previously generated files
+stl2lnas --dir examples/stl/folder_example \
+  -d another/folder/with/stl \
+  --file examples/stl/cube.stl \
+  -f examples/stl/cylinder.stl \
+  -o output/converted.lnas \
+  --overwrite
+```
 
-Some STL and configuration examples are provided in the `examples` folder.
+This outputs the file and also a folder as `<output>.stls/` with the STLs used for generation and its names.
 
-The example below describes what each field does
+### Debug
 
-```yaml
-# Object name to set
-name: cube_plane
-stl:
-  # STLs to use to convert
-  files:
-    # Surface name and STL filename to use to convert it
-    cube: "examples/stl/cube.stl"
-    # When using more than one STL, they're merged together before converting or processing
-    plane: "examples/stl/plane.stl"
-  # Folders with STLs for conversion
-  folders:
-    # All files in these folder will be used to convertion. The generated surface name will be 
-    # the same of the filename. Two surfaces cannot share the same name
-    - "examples/stl/folder_example"
-    - "examples/stl/another_folder"
-output:
-  # Folder to save output files
-  folder: "output/cube_plane"
-# Normalization may be null as well
-normalization:
-  # Size to use for normalization
-  size: 16.0
-  # Reference direction for normalization
-  direction: x
+To run the program for debug purposes, use
+
+```bash
+# --: finish cargo's arguments
+# --dir/-d <folder>: Folders with STL files
+# --file/-f <file>: STL filenames
+# -o: output to save .lnas file
+# --overwrite: Add this if you wish to overwrite previously generated files
+cargo run -- \
+  --dir examples/stl/folder_example \
+  -d another/folder/with/stl \
+  --file examples/stl/cube.stl \
+  -f examples/stl/cylinder.stl \
+  -o output/converted.lnas
 ```
 
 ## Lagrangian Nassu format (.lnas)
@@ -68,15 +68,7 @@ The format definition is:
 ```yaml
 # Format version. Every major, ".lnas" breaks compatibility 
 # v0.2.1 is not compatible with v0.1.0, but it is with v0.2.0
-version: "v0.4.1"
-# Name to use for export
-name: "cube"
-# Normalization may be null, then geometry is generated in original STL positioning and size
-normalization: 
-  # Size to use for normalization
-  size: 16.0
-  # Reference direction for normalization
-  direction: x
+version: "v0.5.0"
 geometry:
   # Vertices are represented as a list [(x0, y0, z0), (x1, y1, z1), ..., (xk, yk, zk)] in f32
   vertices: <base64>
@@ -91,7 +83,7 @@ geometry:
 # Surfaces are patches of triangles that describe a given set of triangles.
 # It's used in post processing cases, when a geometry may be divided in multiple surfaces for
 # post processing.
-# The keys are the ones specified in the `stl.files` field of the configuration
+# The keys are the names of the .stl used
 surfaces:
   # Surface name as key in dictionary
   surface1:

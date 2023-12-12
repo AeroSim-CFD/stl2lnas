@@ -90,6 +90,7 @@ mod tests {
     use super::*;
     use crate::lagrangian::vertice::generate_lagrangian_vertices;
     use crate::stl::reader::read_stl;
+    use std::path;
 
     #[test]
     fn check_normal_decision() {
@@ -137,7 +138,7 @@ mod tests {
 
     #[test]
     fn check_triangles_stl_cube() {
-        let filename = String::from("examples/stl/cube.stl");
+        let filename = path::Path::new(String::from("examples/stl/cube.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);
@@ -147,7 +148,8 @@ mod tests {
 
     #[test]
     fn check_triangles_stl_terrain() {
-        let filename = String::from("examples/stl/terrain.stl");
+        let filename =
+            path::Path::new(String::from("examples/stl/terrain.stl").as_str()).to_owned();
         let triangles = read_stl(&filename);
         let lagr_vertices = generate_lagrangian_vertices(&triangles);
         let lagr_triangles = generate_lagrangian_triangles(&lagr_vertices, &triangles);

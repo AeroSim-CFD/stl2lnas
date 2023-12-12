@@ -42,8 +42,11 @@ mod tests {
 
     #[test]
     fn can_read_stl_cube() {
-        let mut files: HashMap<String, String> = HashMap::new();
-        files.insert("cube".to_string(), "examples/stl/cube.stl".to_string());
+        let mut files: HashMap<String, path::PathBuf> = HashMap::new();
+        files.insert(
+            "cube".to_string(),
+            path::Path::new("examples/stl/cube.stl".to_string().as_str()).to_owned(),
+        );
         let (triangles, surfaces) = get_surfaces(&files);
         // Cube has 2 triangles each face
         let surface_cube = surfaces.get("cube").unwrap().to_owned();
@@ -58,11 +61,14 @@ mod tests {
 
     #[test]
     fn can_read_stl_combine() {
-        let mut files: HashMap<String, String> = HashMap::new();
-        files.insert("cube".to_string(), "examples/stl/cube.stl".to_string());
+        let mut files: HashMap<String, path::PathBuf> = HashMap::new();
+        files.insert(
+            "cube".to_string(),
+            path::Path::new("examples/stl/cube.stl".to_string().as_str()).to_owned(),
+        );
         files.insert(
             "cylinder".to_string(),
-            "examples/stl/cylinder.stl".to_string(),
+            path::Path::new("examples/stl/cylinder.stl".to_string().as_str()).to_owned(),
         );
 
         let (triangles, surfaces) = get_surfaces(&files);

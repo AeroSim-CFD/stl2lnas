@@ -28,12 +28,14 @@ After that, `stl2lnas` is treated as a command in your system. You may run using
 # --file/-f <file>: STL filenames
 # -o: output to save .lnas file
 # --overwrite: Add this if you wish to overwrite previously generated files
+# --copy-stl: Add this if you wish to copy STL files to output
 stl2lnas --dir examples/stl/folder_example \
   -d another/folder/with/stl \
   --file examples/stl/cube.stl \
   -f examples/stl/cylinder.stl \
   -o output/converted.lnas \
-  --overwrite
+  --overwrite \
+  --copy-stl
 ```
 
 This outputs the file and also a folder as `<output>.stls/` with the STLs used for generation and its names.

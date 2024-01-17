@@ -1,5 +1,10 @@
 # RELEASE NOTES
 
+## v0.5.1
+
+- Changed behavior of STL copy, now only copies to output if `--copy-stl` is provided
+- Now file version is automatically get from the pacakge metadata
+
 ## v0.5.0
 
 - Removed support for normalization

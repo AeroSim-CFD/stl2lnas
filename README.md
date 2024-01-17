@@ -2,7 +2,7 @@
 
 Convert .stl files to Lagrangian Nassu (.lnas) format.
 
-This is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu),
+This is an auxiliary project for [Nassu solver](https://github.com/AeroSim-CFD/stl2lnas),
 an LBM based CFD solver.
 
 ## Dependencies

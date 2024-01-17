@@ -38,7 +38,7 @@ stl2lnas --dir examples/stl/folder_example \
   --copy-stl
 ```
 
-This outputs the file and also a folder as `<output>.stls/` with the STLs used for generation and its names.
+This outputs the file and, if `--copy-stl` is provided, a folder as `<output>.stls/` with the STLs used for generation and its names.
 
 ### Debug
 
@@ -129,6 +129,4 @@ So $3V_{LNAS}+3T_{LNAS}=270.000+60.000=330.000$ and $12 \cdot 100.000=120.0000$.
 
 Some of the known limitations are:
 
-- It cannot "derefine" triangles, this is, increase the size of triangles. This limits the STL resolution, because its triangles cannot be smaller than the minimum possible area.
-- It does not consider triangle angles. This may disturb points distribution.
 - It can only convert binary STL files

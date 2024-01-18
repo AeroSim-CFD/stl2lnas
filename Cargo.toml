@@ -2,7 +2,7 @@
 name = "stl2lnas"
 authors = ["Waine Oliveira Jr <waine@aerosim.io>"]
 default-run = "stl2lnas"
-version = "0.5.0"
+version = "0.5.1"
 description = "Convert STL to LNAS files"
 edition = "2021"
 

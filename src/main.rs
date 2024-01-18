@@ -20,9 +20,6 @@ use std::path;
 use stl::surfaces::get_surfaces;
 
 fn generate_lnas(args: &Args) {
-    args.save_stl_to_output_folder()
-        .unwrap_or_else(|e| println!("Unable to save STL in its output folder. Error: {}", e));
-
     let (triangles, surfaces) = get_surfaces(&args.all_stls());
 
     let lagrangian_vertices = lagrangian::vertice::generate_lagrangian_vertices(&triangles);
@@ -58,6 +55,11 @@ fn main() {
         } else {
             println!("Overwriting file...");
         }
+    }
+
+    if args.copy_stl {
+        args.save_stl_to_output_folder()
+            .unwrap_or_else(|e| println!("Unable to save STL in its output folder. Error: {}", e));
     }
 
     generate_lnas(&args);

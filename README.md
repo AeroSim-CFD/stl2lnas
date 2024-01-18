@@ -2,7 +2,7 @@
 
 Convert .stl files to Lagrangian Nassu (.lnas) format.
 
-This is an auxiliary project for [Nassu solver](https://bitbucket.org/aerosim-cfd/nassu),
+This is an auxiliary project for [Nassu solver](https://github.com/AeroSim-CFD/stl2lnas),
 an LBM based CFD solver.
 
 ## Dependencies
@@ -28,15 +28,17 @@ After that, `stl2lnas` is treated as a command in your system. You may run using
 # --file/-f <file>: STL filenames
 # -o: output to save .lnas file
 # --overwrite: Add this if you wish to overwrite previously generated files
+# --copy-stl: Add this if you wish to copy STL files to output
 stl2lnas --dir examples/stl/folder_example \
   -d another/folder/with/stl \
   --file examples/stl/cube.stl \
   -f examples/stl/cylinder.stl \
   -o output/converted.lnas \
-  --overwrite
+  --overwrite \
+  --copy-stl
 ```
 
-This outputs the file and also a folder as `<output>.stls/` with the STLs used for generation and its names.
+This outputs the file and, if `--copy-stl` is provided, a folder as `<output>.stls/` with the STLs used for generation and its names.
 
 ### Debug
 
@@ -127,6 +129,4 @@ So $3V_{LNAS}+3T_{LNAS}=270.000+60.000=330.000$ and $12 \cdot 100.000=120.0000$.
 
 Some of the known limitations are:
 
-- It cannot "derefine" triangles, this is, increase the size of triangles. This limits the STL resolution, because its triangles cannot be smaller than the minimum possible area.
-- It does not consider triangle angles. This may disturb points distribution.
 - It can only convert binary STL files

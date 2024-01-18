@@ -14,13 +14,17 @@ pub struct Args {
     #[arg(short, long, num_args(0..), help = "STL filenames to use")]
     pub file: Vec<String>,
 
-    /// Number of times to greet
+    /// Output folder
     #[arg(short, long, help = "Output filename for .lnas")]
     pub output: String,
 
-    /// Number of times to greet
+    /// Overwrite existing files
     #[arg(long, action, help = "Overwrite existing files")]
     pub overwrite: bool,
+
+    /// Copy STLs or not
+    #[arg(long, action, help = "Copy STLs to output folder")]
+    pub copy_stl: bool,
 }
 
 impl Args {

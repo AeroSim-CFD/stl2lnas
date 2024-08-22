@@ -1,9 +1,6 @@
 name: Check Codebase formatting
 
-on:
-  push:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   format:

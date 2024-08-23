@@ -32,7 +32,7 @@ jobs:
         run: |
           if [[ $(git status --porcelain) ]]; then
             echo "Warning: Code must be formatted!" >&2
-            git diff
+            git status --porcelain
             exit 1
           else
             echo "No formatting issues detected."

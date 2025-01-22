@@ -1,4 +1,4 @@
-name: Rust Build
+name: Rust Build (Cross-Compile)
 
 on:
   release:
@@ -7,31 +7,48 @@ on:
 permissions:
   contents: write
 
-# Cancel previous jobs that are running
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.release.id }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-gnu
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        run: curl https://sh.rustup.rs -sSf | sh -s -- -y
+      - name: Install Rust and targets
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+          rustup target add ${{ matrix.target }}
+
+      - name: Install additional tools (if needed)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64
+        if: matrix.target == 'x86_64-pc-windows-gnu'
 
       - name: Build the project in release mode
-        run: cargo build --release
+        run: |
+          source $HOME/.cargo/env
+          cargo build --release --target ${{ matrix.target }}
 
       - name: Upload Release Binary
-        id: upload-release-bin
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./target/release/stl2lnas
-          asset_name: stl2lnas-bin
-          asset_content_type: application/zip
+          asset_path: ./target/${{ matrix.target }}/release/stl2lnas${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
+          asset_name: stl2lnas-${{ matrix.target }}${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
+          asset_content_type: application/octet-stream

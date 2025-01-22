@@ -1,9 +1,10 @@
 name: Rust Build
 
 on:
-  release:
+  push:
     branches: [main]
-    # types: [published]
+  release:
+    types: [published]
 
 permissions:
   contents: write

@@ -50,12 +50,13 @@ jobs:
       - name: Build the project in release mode
         run: cargo build --release --target ${{ matrix.platform.target }}
 
-      # - name: Upload Release Binary
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ github.event.release.upload_url }}
-      #     asset_path: ./target/${{ matrix.platform.target }}/release/stl2lnas${{ matrix.platform.os == 'windows-latest' && '.exe' || '' }}
-      #     asset_name: stl2lnas-${{ matrix.platform.target }}${{ matrix.platform.os == 'windows-latest' && '.exe' || '' }}
-      #     asset_content_type: application/octet-stream
+      - name: Upload Release Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/${{ matrix.platform.target }}/release/stl2lnas${{ matrix.platform.os == 'windows-latest' && '.exe' || '' }}
+          asset_name: stl2lnas-${{ matrix.platform.target }}${{ matrix.platform.os == 'windows-latest' && '.exe' || '' }}
+          asset_content_type: application/octet-stream
+        if: github.event_name == 'release' && github.event.action == 'published'
